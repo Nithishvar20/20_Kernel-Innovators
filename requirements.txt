@@ -1,0 +1,11 @@
+opencv-python
+librosa
+numpy
+flask
+requests
+beautifulsoup4
+snscrape
+Pillow
+exifread
+networkx
+matplotlib

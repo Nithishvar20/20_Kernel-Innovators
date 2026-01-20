@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Exposure Intelligence Platform</title>
+
+  <style>
+    :root {
+      --bg-main: #020617;
+      --accent1: #5eead4;
+      --accent2: #38bdf8;
+      --accent3: #a855f7;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+    }
+
+    /* ===== FIX: REMOVE SCROLL ONLY FOR LANDING PAGE ===== */
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;   /* ✅ NO SCROLL */
+      background-color: var(--bg-main);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", system-ui, sans-serif;
+    }
+
+    body {
+      background:
+        radial-gradient(800px 400px at 10% 10%, rgba(56,189,248,0.15), transparent 60%),
+        radial-gradient(900px 500px at 90% 20%, rgba(94,234,212,0.18), transparent 60%),
+        radial-gradient(700px 400px at 50% 90%, rgba(168,85,247,0.15), transparent 65%),
+        linear-gradient(180deg, #020617, #020617);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      max-width: 1200px;
+      padding: 0 40px;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 60px;
+      align-items: center;
+      animation: fadeIn 1.2s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== LEFT ===== */
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 26px;
+    }
+
+    .logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      color: #022c22;
+    }
+
+    h1 {
+      font-size: 54px;
+      line-height: 1.1;
+      margin: 0 0 20px;
+      letter-spacing: -1px;
+    }
+
+    h1 span {
+      background: linear-gradient(135deg, var(--accent1), var(--accent2), var(--accent3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--text-muted);
+      max-width: 520px;
+    }
+
+    .warning {
+      margin-top: 22px;
+      font-size: 14px;
+      color: #fbbf24;
+    }
+
+    .cta {
+      margin-top: 42px;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 20px 36px;
+      border-radius: 20px;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 0.6px;
+      text-decoration: none;
+      color: #022c22;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2), var(--accent3));
+      box-shadow:
+        0 0 40px rgba(94,234,212,0.55),
+        0 0 80px rgba(56,189,248,0.35);
+      transition: all 0.35s ease;
+      animation: pulse 3s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 30px rgba(94,234,212,0.4); }
+      50% { box-shadow: 0 0 70px rgba(56,189,248,0.7); }
+      100% { box-shadow: 0 0 30px rgba(94,234,212,0.4); }
+    }
+
+    .cta:hover {
+      transform: translateY(-3px) scale(1.02);
+    }
+
+    .trust {
+      margin-top: 16px;
+      font-size: 13px;
+      color: #9ca3af;
+    }
+
+    /* ===== RIGHT ===== */
+    .intel-stack {
+      display: grid;
+      gap: 22px;
+    }
+
+    .intel-card {
+      background:
+        linear-gradient(180deg, rgba(15,23,42,0.92), rgba(2,6,23,0.92));
+      border-radius: 22px;
+      padding: 26px 28px;
+      box-shadow:
+        0 30px 80px rgba(0,0,0,0.65),
+        inset 0 0 0 1px rgba(255,255,255,0.06);
+      backdrop-filter: blur(16px);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .intel-card:nth-child(2) { animation-delay: 1.5s; }
+    .intel-card:nth-child(3) { animation-delay: 3s; }
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+      100% { transform: translateY(0); }
+    }
+
+    .intel-title {
+      color: var(--accent1);
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .intel-text {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .intel-highlight {
+      margin-top: 12px;
+      font-weight: 700;
+      color: var(--accent2);
+      font-size: 14px;
+    }
+
+    /* ===== MOBILE ===== */
+    @media (max-width: 980px) {
+      body {
+        overflow-y: auto; /* allow scroll on mobile */
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+        gap: 50px;
+      }
+
+      h1 {
+        font-size: 42px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<section class="hero">
+
+  <!-- LEFT -->
+  <div>
+    <div class="brand">
+      <div class="logo">🛡</div>
+      <strong>Exposure Intelligence</strong>
+    </div>
+
+    <h1>
+      Your Digital Footprint<br>
+      Is <span>Bigger Than You Think</span>
+    </h1>
+
+    <p>
+      Analyze usernames, images, videos, audio, and public text to uncover
+      identity correlation, metadata leakage, and behavioral risk — using
+      ethical Open Source Intelligence only.
+    </p>
+
+    <div class="warning">
+      ⚠ Most users discover exposure only after it is exploited.
+    </div>
+
+    <a href="/scan" class="cta">
+      🔍 Reveal My Exposure Risk
+    </a>
+
+    <div class="trust">
+      Ethical OSINT • No private data • Explainable risk scoring
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="intel-stack">
+
+    <div class="intel-card">
+      <div class="intel-title">📊 Exposure Overview</div>
+      <div class="intel-text">
+        Aggregate intelligence across identity, media, and behavioral signals.
+      </div>
+      <div class="intel-highlight">
+        Risk Score • Signal Density • Confidence Index
+      </div>
+    </div>
+
+    <div class="intel-card">
+      <div class="intel-title">🔗 Identity Correlation</div>
+      <div class="intel-text">
+        Detects cross-platform username reuse and linkage patterns.
+      </div>
+      <div class="intel-highlight">
+        Instagram • Threads • Facebook • GitHub
+      </div>
+    </div>
+
+    <div class="intel-card">
+      <div class="intel-title">🖼 Media & Metadata</div>
+      <div class="intel-text">
+        Extracts EXIF, GPS, device fingerprints, and timestamp correlations.
+      </div>
+      <div class="intel-highlight">
+        Image • Video • Audio
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+</body>
+</html>

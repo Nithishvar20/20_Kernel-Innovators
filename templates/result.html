@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Exposure Intelligence Report</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- ================= HERO ================= -->
+  <h1>📊 Exposure Intelligence Report</h1>
+  <p style="
+    text-align:center;
+    max-width:640px;
+    margin:14px auto 50px;
+    font-size:15px;
+    line-height:1.6;
+    color:#9ca3af;
+  ">
+    AI-powered OSINT exposure analysis across identities, media metadata,
+    and behavioral intelligence signals.
+  </p>
+
+  <!-- ================= SCAN SUMMARY ================= -->
+  <div class="card">
+    <h3 style="display:flex;align-items:center;gap:10px;">
+      <span style="color:#5eead4;">●</span> Scan Summary
+    </h3>
+
+    <p style="font-size:15px;">
+      Platforms Found:
+      <b style="color:#5eead4;">{{ data.platforms_found | length }}</b>
+      &nbsp; | &nbsp;
+      Signals Detected:
+      <b style="color:#38bdf8;">{{ risk.confidence_score // 15 }}</b>
+    </p>
+
+    <p class="scan-meta" style="margin-top:8px;">
+      Scan Time: {{ scan_time }}
+    </p>
+  </div>
+
+  <!-- ================= PLATFORMS ================= -->
+  {% if data.platforms_found %}
+  <div class="card">
+    <h3 style="display:flex;align-items:center;gap:10px;">
+      <span style="color:#38bdf8;">●</span> Platforms Identified
+    </h3>
+
+    <ul style="margin-top:14px;">
+      {% for platform, info in data.platforms_found.items() %}
+        <li style="margin-bottom:14px;">
+          <b style="font-size:15px;">{{ platform }}</b> —
+          <a href="{{ info.url }}" target="_blank">{{ info.url }}</a><br>
+          <span style="color:#9ca3af;font-size:13px;">
+            Confidence: {{ info.confidence }} |
+            Exposure Level: {{ info.richness }}
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <!-- ================= IMAGE METADATA ================= -->
+  {% if data.image_metadata %}
+  <div class="card">
+    <h3 style="display:flex;align-items:center;gap:10px;">
+      <span style="color:#a855f7;">●</span> Image Metadata (OSINT)
+    </h3>
+
+    <ul style="margin-top:14px;">
+      {% for k,v in data.image_metadata.items() %}
+        {% if k != "gps" %}
+        <li style="margin-bottom:8px;">
+          <b>{{ k }}:</b>
+          <span style="color:#cbd5f5;">{{ v }}</span>
+        </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <!-- ================= VIDEO OSINT ================= -->
+{% if data.video_risk and data.video_risk.metadata %}
+<div class="card">
+  <h3 style="display:flex;align-items:center;gap:10px;">
+    <span style="color:#8b5cf6;">●</span> Video OSINT Analysis
+  </h3>
+
+  <p style="font-size:14px;color:#9ca3af;margin-bottom:12px;">
+    Risk Score: <b style="color:#c4b5fd;">{{ data.video_risk.risk }}</b>
+  </p>
+
+  {% if data.video_risk.signals %}
+  <ul style="margin-bottom:14px;">
+    {% for s in data.video_risk.signals %}
+      <li style="margin-bottom:6px;">🎥 {{ s }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  <ul style="margin-top:14px;">
+    {% for k, v in data.video_risk.metadata.items() %}
+      <li style="margin-bottom:8px;">
+        <b>{{ k }}:</b>
+        <span style="color:#cbd5f5;">{{ v }}</span>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <p style="font-size:13px;color:#94a3b8;margin-top:14px;">
+    {{ data.video_risk.evidence }}
+  </p>
+</div>
+{% endif %}
+
+  <!-- ================= AUDIO OSINT ================= -->
+{% if data.audio_risk and data.audio_risk.metadata %}
+<div class="card">
+  <h3 style="display:flex;align-items:center;gap:10px;">
+    <span style="color:#22c55e;">●</span> Audio OSINT Analysis
+  </h3>
+
+  <p style="font-size:14px;color:#9ca3af;margin-bottom:12px;">
+    Risk Score: <b style="color:#86efac;">{{ data.audio_risk.risk }}</b>
+  </p>
+
+  {% if data.audio_risk.signals %}
+  <ul style="margin-bottom:14px;">
+    {% for s in data.audio_risk.signals %}
+      <li style="margin-bottom:6px;">🎧 {{ s }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  <ul style="margin-top:14px;">
+    {% for k, v in data.audio_risk.metadata.items() %}
+      <li style="margin-bottom:8px;">
+        <b>{{ k }}:</b>
+        <span style="color:#cbd5f5;">{{ v }}</span>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <p style="font-size:13px;color:#94a3b8;margin-top:14px;">
+    {{ data.audio_risk.evidence }}
+  </p>
+</div>
+{% endif %}
+
+
+  <!-- ================= GPS MAP ================= -->
+  {% if data.image_metadata and data.image_metadata.gps %}
+  <div class="card">
+    <h3 style="display:flex;align-items:center;gap:10px;">
+      <span style="color:#ef4444;">●</span> Image GPS Location
+    </h3>
+
+    <p style="font-size:14px;color:#9ca3af;margin-bottom:12px;">
+      Latitude: {{ data.image_metadata.gps.lat }},
+      Longitude: {{ data.image_metadata.gps.lon }}
+    </p>
+
+    <iframe
+      width="100%"
+      height="300"
+      style="border-radius:18px;border:none"
+      src="https://www.openstreetmap.org/export/embed.html?bbox={{ data.image_metadata.gps.lon - 0.01 }},{{ data.image_metadata.gps.lat - 0.01 }},{{ data.image_metadata.gps.lon + 0.01 }},{{ data.image_metadata.gps.lat + 0.01 }}&marker={{ data.image_metadata.gps.lat }},{{ data.image_metadata.gps.lon }}">
+    </iframe>
+  </div>
+  {% endif %}
+
+  <!-- ================= OVERALL RISK ================= -->
+  <div class="card">
+    <div class="overall-risk">
+      <div>
+        <h3>Overall Exposure Risk</h3>
+        <span class="risk-badge {{ risk.level|lower }}">
+          {{ risk.level }}
+        </span>
+      </div>
+      <div class="risk-score">{{ risk.score }}/100</div>
+    </div>
+
+    <div class="risk-progress">
+      <div class="risk-progress-fill" data-score="{{ risk.score }}"></div>
+    </div>
+  </div>
+
+  <!-- ================= RISK BREAKDOWN ================= -->
+  <div class="card">
+    <h3 style="display:flex;align-items:center;gap:10px;">
+      <span style="color:#22c55e;">●</span> Risk Breakdown by Category
+    </h3>
+
+    <ul style="margin-top:14px;font-size:14px;">
+      <li>🌐 Platform Exposure: <b>{{ risk.risk_breakdown.platform_exposure }}%</b></li>
+      <li>🧠 Identity Correlation: <b>{{ risk.risk_breakdown.identity_correlation }}%</b></li>
+      <li>🖼 Media Metadata: <b>{{ risk.risk_breakdown.media_metadata }}%</b></li>
+      <li>📝 Text Content: <b>{{ risk.risk_breakdown.text_content }}%</b></li>
+    </ul>
+  </div>
+
+  <!-- ================= WHY ================= -->
+  <div class="card">
+    <h3 style="display:flex;align-items:center;gap:10px;">
+      <span style="color:#f59e0b;">●</span> Why This Risk?
+    </h3>
+
+    <ul style="margin-top:14px;">
+      {% for r in risk.reasons %}
+        <li style="margin-bottom:8px;">{{ r }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <!-- ================= ACTION ================= -->
+  <div style="text-align:center;margin:60px 0 20px;display:flex;gap:22px;justify-content:center;flex-wrap:wrap;">
+
+    <a href="/" class="action-btn"
+       style="
+         padding:18px 34px;
+         border-radius:20px;
+         font-weight:900;
+         font-size:15px;
+         color:#001b22;
+         background:linear-gradient(135deg,#5eead4,#38bdf8,#a855f7);
+         box-shadow:0 0 40px rgba(94,234,212,0.45);
+         text-decoration:none;
+       ">
+      🔁 Run Another Scan
+    </a>
+
+    <a href="/download/pdf" class="action-btn"
+       style="
+         padding:18px 34px;
+         border-radius:20px;
+         font-weight:900;
+         font-size:15px;
+         color:#020617;
+         background:linear-gradient(135deg,#6366f1,#38bdf8);
+         box-shadow:0 0 40px rgba(99,102,241,0.45);
+         text-decoration:none;
+       ">
+      📄 Download Report (PDF)
+    </a>
+
+  </div>
+
+  <div class="disclaimer">
+    This report uses ethical Open Source Intelligence (OSINT) only.<br>
+    No private, paid, or restricted data sources are accessed.
+  </div>
+
+</div>
+
+<script>
+  window.addEventListener("load", () => {
+    document.querySelectorAll(".risk-progress-fill").forEach(bar => {
+      bar.style.width = bar.dataset.score + "%";
+    });
+  });
+</script>
+
+</body>
+</html>
