@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Image Detector</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: #e5e7eb;
+            padding: 40px;
+        }
+
+        .card {
+            max-width: 600px;
+            margin: auto;
+            background: #020617;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.45);
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        input[type="file"] {
+            margin-top: 12px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 26px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #38bdf8, #8b5cf6);
+            color: #020617;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .note {
+            margin-top: 20px;
+            font-size: 13px;
+            color: #cbd5f5;
+            line-height: 1.5;
+        }
+
+        .warning {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #facc15;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <h2>AI Image Detector</h2>
+
+    <p>
+        Upload an image to analyze whether it is <b>AI-generated</b> using
+        ethical OSINT-based indicators.
+    </p>
+
+    <form method="POST" action="/ai-image-upload" enctype="multipart/form-data">
+        <input type="file" name="image" accept="image/*" required>
+        <br>
+        <button type="submit">Analyze Image</button>
+    </form>
+
+    <div class="note">
+        This detector analyzes image resolution, metadata (EXIF), and camera
+        fingerprints to estimate AI-generation likelihood.
+    </div>
+
+    <div class="warning">
+        ⚠ Images captured on mobile phones may show <b>lower confidence</b>
+        even when classified as real, especially if metadata is removed
+        by social media or compression.
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,3 +1,5 @@
+from osint.ai_image_detector import analyze_ai_image
+
 from flask import Flask, render_template, request, send_file
 from datetime import datetime
 import os
@@ -41,6 +43,33 @@ def index():
     if request.method == "POST":
         return run_scan()
     return render_template("index.html")
+# ================= AI IMAGE DETECTOR =================
+@app.route("/ai-image-detector")
+def ai_image_detector():
+    return render_template("ai_image_detector.html")
+@app.route("/ai-image-upload", methods=["POST"])
+def ai_image_upload():
+
+    image = request.files.get("image")
+
+    if not image or image.filename == "":
+        return "No image selected", 400
+
+    os.makedirs("uploads", exist_ok=True)
+
+    image_path = os.path.join("uploads", image.filename)
+    image.save(image_path)
+
+    ai_result = analyze_ai_image(image_path)
+
+    return render_template(
+        "ai_image_result.html",
+        filename=image.filename,
+        result=ai_result
+    )
+
+
+
 
 
 # ================= SCAN LOGIC =================

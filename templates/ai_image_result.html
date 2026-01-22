@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Image Detection Result</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: #e5e7eb;
+            padding: 40px;
+        }
+
+        .card {
+            max-width: 750px;
+            margin: auto;
+            background: #020617;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.45);
+        }
+
+        h2, h3 {
+            margin-top: 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 999px;
+            font-weight: 600;
+            margin: 10px 0;
+        }
+
+        .red { background: #dc2626; }
+        .yellow { background: #ca8a04; }
+        .green { background: #16a34a; }
+
+        .score {
+            font-size: 34px;
+            font-weight: 700;
+            margin: 10px 0 20px;
+        }
+
+        ul {
+            margin-left: 18px;
+        }
+
+        hr {
+            margin: 24px 0;
+            border: none;
+            border-top: 1px solid #1e293b;
+        }
+
+        a {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        pre {
+            background: #020617;
+            padding: 12px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <h2>AI Image Detection Result</h2>
+
+    <p><b>Filename:</b> {{ filename }}</p>
+    <p><b>Resolution:</b> {{ result.resolution }}</p>
+
+    <!-- Verdict Badge -->
+    {% if "Likely AI" in result.verdict %}
+        <span class="badge red">{{ result.verdict }}</span>
+    {% elif "Possibly" in result.verdict %}
+        <span class="badge yellow">{{ result.verdict }}</span>
+    {% else %}
+        <span class="badge green">{{ result.verdict }}</span>
+    {% endif %}
+
+    <div class="score">{{ result.score }}%</div>
+
+    <h3>Signals Detected</h3>
+    <ul>
+        {% for r in result.reasons %}
+            <li>{{ r }}</li>
+        {% endfor %}
+    </ul>
+
+    <hr>
+
+    <h3>EXIF Metadata</h3>
+
+    <p><b>Camera Make:</b> {{ result.camera_make or "Not Available" }}</p>
+    <p><b>Camera Model:</b> {{ result.camera_model or "Not Available" }}</p>
+    <p><b>Date Taken:</b> {{ result.date_taken or "Not Available" }}</p>
+
+    {% if result.gps %}
+        <p><b>GPS Data:</b></p>
+        <pre>{{ result.gps }}</pre>
+    {% else %}
+        <p><b>GPS Data:</b> Not Available</p>
+    {% endif %}
+
+    {% if result.visual_analysis %}
+    <hr>
+
+    <h3>Visual Signal Analysis</h3>
+
+    <p><b>Noise Score:</b> {{ result.visual_analysis.noise_score | round(2) }}</p>
+    <p><b>Edge Density:</b> {{ result.visual_analysis.edge_density | round(3) }}</p>
+    {% endif %}
+
+    <hr>
+
+    <a href="/ai-image-detector">⬅ Upload another image</a>
+
+</div>
+
+</body>
+</html>
