@@ -1,325 +1,802 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Chakravyuh OSINT Scanner</title>
+<meta charset="UTF-8" />
+<title>RiskLens – Exposure Intelligence Scan</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <style>
-    /* ===============================
-       ROOT FIX — REMOVE WHITE SCROLL
-       =============================== */
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      min-height: 100%;
-      background-color: #020617;
-      overflow-x: hidden;
+<style>
+  :root{
+    /* ===== Theme (Matches Landing Page) ===== */
+    --bg0:#070A12;
+    --bg1:#0B1630;
+    --bg2:#07142A;
+
+    --glass: rgba(255,255,255,0.06);
+    --glass2: rgba(255,255,255,0.09);
+    --stroke: rgba(255,255,255,0.10);
+    --stroke2: rgba(255,255,255,0.14);
+
+    --text:#EAF0FF;
+    --muted: rgba(234,240,255,0.74);
+    --dim: rgba(234,240,255,0.52);
+
+    --blue:#4F8CFF;
+    --cyan:#38D6FF;
+    --violet:#A78BFA;
+
+    --warnBG: rgba(245,158,11,0.10);
+    --warnBD: rgba(245,158,11,0.24);
+    --warnTX: #FFD18C;
+
+    --shadow: 0 26px 80px rgba(0,0,0,0.55);
+    --shadow2: 0 18px 44px rgba(0,0,0,0.46);
+
+    --r-xl: 30px;
+    --r-lg: 22px;
+    --r-md: 16px;
+    --r-sm: 12px;
+  }
+
+  /* ===== Reset ===== */
+  *{ box-sizing: border-box; }
+  html, body{
+    margin:0;
+    height:100%;
+    overflow:hidden;  /* ✅ non-scroll desktop */
+    font-family: "Inter", system-ui, -apple-system, Segoe UI, sans-serif;
+    color: var(--text);
+    background: var(--bg0);
+  }
+
+  body{
+    display:grid;
+    place-items:center;
+    background:
+      radial-gradient(1100px 700px at 14% 18%, rgba(56,214,255,0.14), transparent 60%),
+      radial-gradient(900px 600px at 88% 16%, rgba(79,140,255,0.16), transparent 58%),
+      radial-gradient(1200px 850px at 55% 115%, rgba(167,139,250,0.10), transparent 66%),
+      linear-gradient(180deg, var(--bg0) 0%, var(--bg1) 55%, var(--bg2) 100%);
+  }
+
+  /* ===== Layout shell ===== */
+  .stage{
+    width: min(1240px, 94vw);
+    height: min(780px, 92vh);
+    padding: 22px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .shell{
+    width: 100%;
+    height: 100%;
+    border-radius: var(--r-xl);
+    padding: 22px;
+
+    background:
+      radial-gradient(700px 420px at 82% 10%, rgba(56,214,255,0.07), transparent 65%),
+      radial-gradient(720px 440px at 18% 88%, rgba(79,140,255,0.08), transparent 65%),
+      rgba(255,255,255,0.035);
+
+    border: 1px solid rgba(255,255,255,0.10);
+    box-shadow: var(--shadow);
+    overflow:hidden;
+
+    display:grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 16px;
+  }
+
+  /* ===== Topbar ===== */
+  .topbar{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap: 18px;
+    padding: 4px 4px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap: 12px;
+  }
+
+  .logo{
+    width: 46px;
+    height: 46px;
+    border-radius: 16px;
+    position:relative;
+    overflow:hidden;
+    flex: 0 0 auto;
+
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 18px 55px rgba(79,140,255,.14);
+  }
+  .logo::before{
+    content:"";
+    position:absolute;
+    inset:-2px;
+    background:
+      radial-gradient(24px 24px at 35% 35%, rgba(56,214,255,0.96), transparent 60%),
+      radial-gradient(30px 30px at 70% 75%, rgba(79,140,255,0.96), transparent 62%),
+      linear-gradient(135deg, rgba(167,139,250,0.34), rgba(56,214,255,0.10));
+    opacity: 0.95;
+  }
+  .logo::after{
+    content:"RL";
+    position:absolute;
+    inset:0;
+    display:grid;
+    place-items:center;
+    font-weight: 950;
+    font-size: 13px;
+    letter-spacing: 0.4px;
+    color:#061126;
+    text-shadow: 0 8px 18px rgba(0,0,0,0.35);
+  }
+
+  .titleblock h1{
+    margin:0;
+    font-size: 20px;
+    font-weight: 950;
+    letter-spacing: -0.35px;
+    line-height: 1.25;
+  }
+  .titleblock p{
+    margin: 4px 0 0;
+    font-size: 12.8px;
+    color: rgba(234,240,255,0.60);
+    line-height: 1.55;
+    max-width: 560px;
+  }
+
+  .status{
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 999px;
+    display:flex;
+    align-items:center;
+    gap: 10px;
+
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .34px;
+    text-transform: uppercase;
+    color: rgba(234,240,255,0.82);
+    white-space: nowrap;
+    margin-top: 4px;
+  }
+  .status .dot{
+    width: 9px; height: 9px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--cyan), var(--blue));
+    box-shadow: 0 0 22px rgba(56,214,255,0.35);
+  }
+
+  /* ===== Grid ===== */
+  form.grid{
+    display:grid;
+    grid-template-columns: 1.08fr 0.92fr;
+    gap: 16px;
+    height: 100%;
+    min-height: 0;
+  }
+
+  /* ===== Panel ===== */
+  .panel{
+    height: 100%;
+    min-height: 0;
+    border-radius: var(--r-lg);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.10);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .panel-head{
+    padding: 16px 16px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    background: rgba(255,255,255,0.02);
+  }
+
+  .panel-title{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .panel-title h3{
+    margin:0;
+    font-size: 13.5px;
+    font-weight: 950;
+    letter-spacing: .2px;
+    color: rgba(234,240,255,0.93);
+  }
+
+  .subpill{
+    font-size: 10.5px;
+    font-weight: 950;
+    letter-spacing: .32px;
+    text-transform: uppercase;
+
+    padding: 6px 10px;
+    border-radius: 999px;
+
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    color: rgba(234,240,255,0.74);
+    white-space: nowrap;
+  }
+
+  .panel-head p{
+    margin:0;
+    font-size: 12.2px;
+    color: rgba(234,240,255,0.60);
+    line-height: 1.55;
+  }
+
+  .panel-body{
+    padding: 16px;
+    min-height: 0;
+    height: 100%;
+    display:flex;
+    flex-direction:column;
+    gap: 14px;
+  }
+
+  /* ===== Left: Scrollable only on platform-wise ===== */
+  .panel.scrollable .panel-body{
+    overflow-y:auto;
+    padding-right: 10px;
+  }
+
+  .panel.scrollable .panel-body::-webkit-scrollbar{ width: 10px; }
+  .panel.scrollable .panel-body::-webkit-scrollbar-thumb{
+    background: rgba(255,255,255,0.12);
+    border-radius: 999px;
+    border: 2px solid rgba(0,0,0,0);
+    background-clip: padding-box;
+  }
+  .panel.scrollable .panel-body::-webkit-scrollbar-thumb:hover{
+    background: rgba(255,255,255,0.18);
+    background-clip: padding-box;
+  }
+
+  /* ===== Mode Cards ===== */
+  .mode{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .mode-card{
+    padding: 14px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.045);
+    border: 1px solid rgba(255,255,255,0.10);
+    cursor:pointer;
+    transition: transform .16s ease, border-color .16s ease, background .16s ease;
+    min-height: 92px;
+    position:relative;
+    overflow:hidden;
+  }
+  .mode-card:hover{
+    transform: translateY(-2px);
+    border-color: rgba(56,214,255,0.22);
+    background: rgba(255,255,255,0.06);
+  }
+  .mode-card.active{
+    border-color: rgba(56,214,255,0.54);
+    background:
+      radial-gradient(520px 200px at 30% 0%, rgba(56,214,255,0.16), transparent 62%),
+      rgba(255,255,255,0.05);
+    box-shadow: 0 18px 48px rgba(0,0,0,0.34);
+  }
+
+  .mode-card strong{
+    display:block;
+    font-size: 13px;
+    font-weight: 950;
+    letter-spacing: .2px;
+    margin-bottom: 6px;
+  }
+  .mode-card span{
+    display:block;
+    font-size: 12px;
+    color: rgba(234,240,255,0.62);
+    line-height: 1.5;
+  }
+
+  .tick{
+    position:absolute;
+    top: 12px;
+    right: 12px;
+    width: 26px;
+    height: 26px;
+    border-radius: 999px;
+    display:grid;
+    place-items:center;
+
+    opacity:0;
+    transform: scale(0.92);
+    transition: .2s ease;
+
+    background: linear-gradient(135deg, var(--cyan), var(--blue));
+    color:#061126;
+    font-weight: 950;
+    font-size: 13px;
+  }
+  .mode-card.active .tick{ opacity: 1; transform: scale(1); }
+
+  input[type="radio"]{ display:none; }
+
+  /* ===== Inputs ===== */
+  .field{ margin-top: 2px; }
+
+  label{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 10px;
+    font-size: 12px;
+    color: rgba(234,240,255,0.80);
+    font-weight: 750;
+    letter-spacing: .15px;
+  }
+
+  .req{
+    font-size: 10.5px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    color: rgba(234,240,255,0.62);
+  }
+
+  input[type="text"], textarea{
+    width:100%;
+    margin-top: 8px;
+    padding: 13px 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.11);
+    outline:none;
+
+    background: rgba(7,10,18,0.88);
+    color: var(--text);
+
+    font-size: 13px;
+    line-height: 1.5;
+
+    transition: border-color .16s ease, box-shadow .16s ease;
+  }
+
+  input[type="text"]::placeholder,
+  textarea::placeholder{ color: rgba(234,240,255,0.38); }
+
+  input[type="text"]:focus,
+  textarea:focus{
+    border-color: rgba(56,214,255,0.55);
+    box-shadow: 0 0 0 3px rgba(56,214,255,0.14);
+  }
+
+  /* multi */
+  .multi-grid{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .multi-grid input{ margin-top:0; }
+
+  /* ===== Upload ===== */
+  .upload{
+    border-radius: 18px;
+    padding: 14px;
+    border: 1px dashed rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .upload-title{
+    font-size: 12.3px;
+    font-weight: 900;
+    letter-spacing: .18px;
+    color: rgba(234,240,255,0.88);
+    margin-bottom: 4px;
+  }
+  .upload-note{
+    font-size: 11.5px;
+    color: rgba(234,240,255,0.60);
+    margin-bottom: 10px;
+  }
+
+  .upload-btn{
+    width: 100%;
+    height: 46px;
+    border-radius: 16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    user-select:none;
+
+    font-size: 13px;
+    font-weight: 950;
+    letter-spacing: .2px;
+
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(234,240,255,0.86);
+    transition: transform .16s ease, background .16s ease;
+  }
+  .upload-btn:hover{
+    transform: translateY(-2px);
+    background: rgba(255,255,255,0.09);
+  }
+
+  .filemeta{
+    margin-top: 10px;
+    font-size: 12px;
+    color: rgba(234,240,255,0.72);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 10px;
+  }
+  .filename{
+    max-width: 72%;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
+  .clearfile{
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(234,240,255,0.72);
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 900;
+    cursor:pointer;
+  }
+  .clearfile:hover{
+    border-color: rgba(255,120,120,0.55);
+    color: rgba(255,140,140,0.95);
+  }
+
+  /* ===== RIGHT PANEL: make textarea fill remaining space ===== */
+  .right-stack{
+    height: 100%;
+    min-height: 0;
+    display:flex;
+    flex-direction:column;
+    gap: 12px;
+  }
+
+  .osint-guidance{
+    padding: 12px 12px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.08);
+    display:flex;
+    justify-content:space-between;
+    gap: 12px;
+  }
+
+  .osint-guidance .g-left{
+    min-width: 0;
+  }
+
+  .osint-guidance .g-left strong{
+    display:block;
+    font-size: 12px;
+    font-weight: 950;
+    letter-spacing: .18px;
+    margin-bottom: 4px;
+    color: rgba(234,240,255,0.90);
+  }
+
+  .osint-guidance .g-left span{
+    font-size: 11.5px;
+    color: rgba(234,240,255,0.60);
+    line-height: 1.5;
+    display:block;
+  }
+
+  .osint-guidance .g-tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap: 8px;
+    justify-content:flex-end;
+    align-content:flex-start;
+  }
+
+  .tagpill{
+    height: 28px;
+    padding: 0 10px;
+    border-radius: 999px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.10);
+
+    font-size: 10.5px;
+    font-weight: 900;
+    letter-spacing: .28px;
+    text-transform: uppercase;
+    color: rgba(234,240,255,0.72);
+  }
+
+  /* ✅ extended black box */
+  .textarea-wrap{
+    flex: 1;
+    min-height: 0;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .textarea-wrap textarea{
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+  }
+
+  /* ===== Footer ===== */
+  .footer{
+    display:flex;
+    justify-content:flex-end;
+    gap: 12px;
+    padding: 10px 4px 0;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .btn{
+    height: 52px;
+    border-radius: 16px;
+    padding: 0 22px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-decoration:none;
+    font-size: 13px;
+    font-weight: 950;
+    letter-spacing: .35px;
+
+    cursor:pointer;
+    border: none;
+    white-space: nowrap;
+
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+  }
+
+  .btn.primary{
+    min-width: 260px;
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    color:#061126;
+    box-shadow: 0 20px 60px rgba(79,140,255,0.26);
+  }
+  .btn.primary:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 28px 80px rgba(56,214,255,0.20);
+  }
+
+  .btn.ghost{
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(234,240,255,0.84);
+    padding: 0 18px;
+  }
+  .btn.ghost:hover{
+    transform: translateY(-2px);
+    background: rgba(255,255,255,0.09);
+  }
+
+  /* Responsive */
+  @media(max-width: 980px){
+    html, body{ overflow:auto; }
+    .stage{ height:auto; padding: 18px; }
+    .shell{ height:auto; }
+    form.grid{ grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  function toggleMode(mode){
+    const single = document.getElementById('single');
+    const multi = document.getElementById('multi');
+    const singleBox = document.getElementById('singleBox');
+    const multiBox = document.getElementById('multiBox');
+
+    const leftPanel = document.getElementById("leftPanel");
+    const leftBody  = document.getElementById("leftBody");
+
+    single.classList.toggle('active', mode === 'single');
+    multi.classList.toggle('active', mode === 'multi');
+
+    singleBox.style.display = (mode === 'single') ? 'block' : 'none';
+    multiBox.style.display  = (mode === 'multi')  ? 'block' : 'none';
+
+    document.getElementById('mode_single').checked = (mode === 'single');
+    document.getElementById('mode_multi').checked  = (mode === 'multi');
+
+    /* left scroll only for platform-wise */
+    if(mode === "multi"){
+      leftPanel.classList.add("scrollable");
+    } else {
+      leftPanel.classList.remove("scrollable");
+      if(leftBody) leftBody.scrollTop = 0;
     }
+  }
 
-    * {
-      box-sizing: border-box;
-      font-family: "Segoe UI", Arial, sans-serif;
+  function updateFilename(input){
+    const file = input.files && input.files[0];
+    const meta = document.getElementById("filemeta");
+    const name = document.getElementById("filename");
+
+    if(file){
+      meta.style.display = "flex";
+      name.textContent = file.name;
+    } else {
+      meta.style.display = "none";
+      name.textContent = "";
     }
+  }
 
-    /* ===============================
-       BODY — PREMIUM DARK BACKGROUND
-       =============================== */
-    body {
-      min-height: 100vh;
-      color: #e6f1f5;
-      background:
-        radial-gradient(800px 400px at 10% -10%, rgba(56,189,248,0.18), transparent 50%),
-        radial-gradient(900px 500px at 90% 10%, rgba(94,234,212,0.16), transparent 55%),
-        radial-gradient(700px 400px at 50% 100%, rgba(168,85,247,0.12), transparent 60%),
-        linear-gradient(180deg, #030712 0%, #020617 60%, #020617 100%);
-    }
-
-    /* ===============================
-       CONTAINER
-       =============================== */
-    .container {
-      max-width: 820px;
-      margin: 90px auto;
-      padding: 42px 46px;
-      background:
-        linear-gradient(180deg, rgba(15,23,42,0.92), rgba(2,6,23,0.92));
-      backdrop-filter: blur(16px);
-      border-radius: 22px;
-      box-shadow:
-        0 40px 120px rgba(0,0,0,0.85),
-        inset 0 0 0 1px rgba(94,234,212,0.12);
-      animation: enter 0.9s ease forwards;
-    }
-
-    @keyframes enter {
-      from { opacity: 0; transform: translateY(30px) scale(0.98); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    /* ===============================
-       HEADINGS
-       =============================== */
-    h1 {
-      text-align: center;
-      font-size: 34px;
-      font-weight: 700;
-      margin-bottom: 8px;
-      color: #e5e7eb;
-    }
-
-    .subtitle {
-      text-align: center;
-      color: #9ca3af;
-      font-size: 14px;
-      margin-bottom: 36px;
-    }
-
-    h3 {
-      color: #5eead4;
-      font-size: 16px;
-      margin-bottom: 12px;
-      letter-spacing: 0.4px;
-    }
-
-    hr {
-      border: none;
-      height: 1px;
-      background: linear-gradient(to right, transparent, rgba(94,234,212,0.25), transparent);
-      margin: 30px 0;
-    }
-
-    /* ===============================
-       SCAN MODE CARDS
-       =============================== */
-    .scan-mode-wrapper {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 22px;
-      margin-top: 14px;
-    }
-
-    .scan-card {
-      position: relative;
-      padding: 22px 24px;
-      border-radius: 18px;
-      background: linear-gradient(180deg, #0b151b, #060c10);
-      border: 1px solid rgba(94,234,212,0.18);
-      cursor: pointer;
-      transition: all 0.35s ease;
-      overflow: hidden;
-    }
-
-    .scan-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 0 30px rgba(94,234,212,0.35);
-      border-color: #5eead4;
-    }
-
-    .scan-card input { display: none; }
-
-    .scan-card.active {
-      border-color: #5eead4;
-      box-shadow: 0 0 45px rgba(94,234,212,0.55);
-    }
-
-    .scan-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: #eafcff;
-      margin-bottom: 6px;
-    }
-
-    .scan-desc {
-      font-size: 13px;
-      color: #8fb6c3;
-      line-height: 1.55;
-    }
-
-    /* ===============================
-       INPUTS
-       =============================== */
-    input[type="text"], textarea, select {
-      width: 100%;
-      padding: 16px 18px;
-      background: #0b1216;
-      border: 1px solid rgba(94,234,212,0.22);
-      border-radius: 14px;
-      color: #e6f1f5;
-      margin-bottom: 16px;
-      font-size: 14px;
-      outline: none;
-      transition: all 0.25s ease;
-    }
-
-    input:focus, textarea:focus, select:focus {
-      border-color: #5eead4;
-      box-shadow: 0 0 0 2px rgba(94,234,212,0.25);
-      background: #0c161c;
-    }
-
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
-
-    /* ===============================
-       FILE UPLOAD
-       =============================== */
-    .file-upload {
-      margin-bottom: 20px;
-    }
-
-    .file-label {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 16px 18px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, #0b1216, #0f1e25);
-      border: 1px solid rgba(94,234,212,0.35);
-      color: #9ffcff;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    .file-label input { display: none; }
-
-    .file-name {
-      margin-top: 8px;
-      text-align: center;
-      font-size: 12px;
-      color: #8fb6c3;
-    }
-
-    /* ===============================
-       BUTTON
-       =============================== */
-    button {
-      width: 100%;
-      padding: 20px;
-      border-radius: 18px;
-      font-size: 16px;
-      font-weight: 900;
-      border: none;
-      cursor: pointer;
-      letter-spacing: 0.7px;
-      color: #042f2e;
-      background: linear-gradient(135deg, #5eead4, #38bdf8);
-      box-shadow: 0 0 40px rgba(94,234,212,0.45);
-      transition: all 0.3s ease;
-    }
-    
-
-    button:hover {
-      opacity: 0.95;
-    }
-
-    
-  </style>
-
-  <script>
-    function toggleMode(mode) {
-      document.getElementById("card-single").classList.toggle("active", mode === "single");
-      document.getElementById("card-multi").classList.toggle("active", mode === "multi");
-      document.getElementById("single-mode").style.display = mode === "single" ? "block" : "none";
-      document.getElementById("multi-mode").style.display = mode === "multi" ? "block" : "none";
-    }
-  </script>
+  function clearFile(){
+    const fileInput = document.getElementById("media");
+    fileInput.value = "";
+    updateFilename(fileInput);
+  }
+</script>
 </head>
 
 <body onload="toggleMode('single')">
 
-<div class="container">
+<main class="stage">
+  <section class="shell">
 
-  <h1>RiskLens:Exposure Intelligence Platform</h1>
-  <div class="subtitle">Multi-Platform Open Source Intelligence & Exposure Analysis</div>
+    <!-- Top header -->
+    <div class="topbar">
+      <div class="brand">
+        
+        <div class="titleblock">
+          <h1>RiskLens – Exposure Scan</h1>
+          <p>Evidence-first scanning for identity correlation, metadata leakage, and synthetic media validation.</p>
+        </div>
+      </div>
 
-  <form method="POST" action="/scan" enctype="multipart/form-data">
-
-    <h3>Scan Mode</h3>
-
-    <div class="scan-mode-wrapper">
-      <label class="scan-card active" id="card-single" onclick="toggleMode('single')">
-        <input type="radio" name="mode" value="single" checked>
-        <div class="scan-title">Same Username</div>
-        <div class="scan-desc">Scan one username across all platforms.</div>
-      </label>
-
-      <label class="scan-card" id="card-multi" onclick="toggleMode('multi')">
-        <input type="radio" name="mode" value="platform">
-        <div class="scan-title">Platform-wise Usernames</div>
-        <div class="scan-desc">Different usernames per platform.</div>
-      </label>
+      
     </div>
 
-    <hr>
+    <!-- FORM -->
+    <form id="scanForm" method="POST" action="/scan" enctype="multipart/form-data" class="grid">
 
-    <div id="single-mode">
-      <h3>Common Username</h3>
-      <input type="text" name="single_username" placeholder="Enter username">
+      <!-- LEFT PANEL -->
+      <section class="panel" id="leftPanel">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h3>Scan Configuration</h3>
+            <span class="subpill">Identity Inputs</span>
+          </div>
+          <p>Select a scan mode and provide usernames for correlation.</p>
+        </div>
+
+        <div class="panel-body" id="leftBody">
+
+          <div class="mode">
+            <div id="single" class="mode-card active" onclick="toggleMode('single')">
+              
+              <input id="mode_single" type="radio" name="mode" value="single" checked>
+              <strong>Same Username</strong>
+              <span>Use one handle across platforms to identify reuse patterns.</span>
+            </div>
+
+            <div id="multi" class="mode-card" onclick="toggleMode('multi')">
+              
+              <input id="mode_multi" type="radio" name="mode" value="multi">
+              <strong>Platform-wise</strong>
+              <span>Use different usernames per platform for higher precision.</span>
+            </div>
+          </div>
+
+          <div id="singleBox">
+            <div class="field">
+              <label>
+                Username
+                <span class="req">Required</span>
+              </label>
+              <input type="text" name="single_username" placeholder="Enter username" />
+            </div>
+          </div>
+
+          <div id="multiBox" style="display:none;">
+            <div class="field">
+              <label>
+                Platform Usernames
+                <span class="req">Required</span>
+              </label>
+
+              <div class="multi-grid">
+                <input type="text" name="instagram" placeholder="Instagram username" />
+                <input type="text" name="github" placeholder="GitHub username" />
+                <input type="text" name="linkedin" placeholder="LinkedIn username" />
+              </div>
+            </div>
+          </div>
+
+          <div class="upload">
+            <div class="upload-title">Media Evidence (optional)</div>
+            <div class="upload-note">Upload image/video/audio for metadata review and verification.</div>
+
+            <label class="upload-btn" for="media">Upload file</label>
+            <input id="media" type="file" name="media" hidden onchange="updateFilename(this)" />
+
+            <div id="filemeta" class="filemeta" style="display:none;">
+              <div class="filename" id="filename"></div>
+              <button type="button" class="clearfile" onclick="clearFile()">Remove</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- RIGHT PANEL -->
+      <section class="panel">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h3>Text OSINT</h3>
+            <span class="subpill">Context Signals</span>
+          </div>
+          <p>Paste text artifacts to enrich correlation confidence and reporting output.</p>
+        </div>
+
+        <div class="panel-body right-stack">
+
+          
+
+          <div class="textarea-wrap">
+            <div class="field">
+              <label>
+                Text Input
+                <span class="req">Optional</span>
+              </label>
+            </div>
+
+            <!-- ✅ this expands fully -->
+            <textarea name="text_input" placeholder="Example: bio, post content, suspicious profile summary, leaked text snippet..."></textarea>
+          </div>
+
+        </div>
+      </section>
+
+    </form>
+
+    <!-- Footer -->
+    <div class="footer">
+      <a class="btn ghost" href="/">Back</a>
+      <button class="btn primary" type="submit" form="scanForm">
+        Run Exposure Scan
+      </button>
     </div>
 
-    <div id="multi-mode" style="display:none;">
-      <h3>Platform-wise Usernames</h3>
-      <input type="text" name="instagram" placeholder="Instagram username">
-      <input type="text" name="github" placeholder="GitHub username">
-      <input type="text" name="facebook" placeholder="Facebook username">
-      <input type="text" name="threads" placeholder="Threads username">
-      <input type="text" name="reddit" placeholder="Reddit username">
-      <input type="text" name="linkedin" placeholder="LinkedIn username">
-    </div>
+  </section>
+</main>
 
-    <hr>
-
-    <h3>📝 Text OSINT</h3>
-    <textarea name="text_input" placeholder="Paste bio, post, leaked text..."></textarea>
-
-  
-
-    <h3>📁 Upload Media (Optional)</h3>
-
-<div class="file-upload">
-  <label class="file-label">
-    🖼 Image File
-    <input type="file" name="image_file" accept="image/*"
-           onchange="showFileName(this, 'image-name')">
-  </label>
-  <div class="file-name" id="image-name">No file selected</div>
-</div>
-
-<div class="file-upload">
-  <label class="file-label">
-    🎥 Video File
-    <input type="file" name="video_file" accept="video/*"
-           onchange="showFileName(this, 'video-name')">
-  </label>
-  <div class="file-name" id="video-name">No file selected</div>
-</div>
-
-<div class="file-upload">
-  <label class="file-label">
-    🎧 Audio File
-    <input type="file" name="audio_file" accept="audio/*"
-           onchange="showFileName(this, 'audio-name')">
-  </label>
-  <div class="file-name" id="audio-name">No file selected</div>
-</div>
-
-    <button type="submit">🔍 Run OSINT Scan</button>
-
-  </form>
-
-</div>
-<script>
-  function showFileName(input, targetId) {
-    const label = document.getElementById(targetId);
-    if (input.files && input.files.length > 0) {
-      label.textContent = "Selected: " + input.files[0].name;
-    } else {
-      label.textContent = "No file selected";
-    }
-  }
-</script>
 </body>
 </html>

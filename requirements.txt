@@ -9,3 +9,7 @@ Pillow
 exifread
 networkx
 matplotlib
+reportlab
+torch
+torchvision
+torchaudio

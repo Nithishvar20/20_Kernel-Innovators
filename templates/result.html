@@ -1,271 +1,735 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Exposure Intelligence Report</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg0:#070A12;
+      --bg1:#0B1630;
+      --bg2:#07142A;
+
+      --line: rgba(255,255,255,0.10);
+      --line2: rgba(255,255,255,0.07);
+
+      --text:#EAF0FF;
+      --muted: rgba(234,240,255,0.72);
+      --dim: rgba(234,240,255,0.50);
+
+      --blue:#4F8CFF;
+      --cyan:#38D6FF;
+      --violet:#A78BFA;
+
+      --green:#22c55e;
+      --amber:#f59e0b;
+      --red:#ef4444;
+
+      --shadow: 0 26px 80px rgba(0,0,0,0.55);
+      --shadow2: 0 18px 44px rgba(0,0,0,0.46);
+
+      --r-xl: 28px;
+      --r-lg: 22px;
+      --r-md: 16px;
+      --r-sm: 12px;
+    }
+
+    *{ box-sizing:border-box; }
+    html, body{
+      height:100%;
+      margin:0;
+      overflow:hidden; /* ✅ whole page non-scroll */
+      font-family: "Inter", system-ui, -apple-system, Segoe UI, sans-serif;
+      color: var(--text);
+      background: var(--bg0);
+    }
+
+    body{
+      display:grid;
+      place-items:center;
+      background:
+        radial-gradient(1100px 700px at 14% 18%, rgba(56,214,255,0.14), transparent 60%),
+        radial-gradient(900px 600px at 88% 16%, rgba(79,140,255,0.16), transparent 58%),
+        radial-gradient(1200px 850px at 55% 115%, rgba(167,139,250,0.10), transparent 66%),
+        linear-gradient(180deg, var(--bg0) 0%, var(--bg1) 55%, var(--bg2) 100%);
+    }
+
+    /* ===== Shell ===== */
+    .stage{
+      width: min(1440px, 94vw);
+      height: min(840px, 92vh);
+      padding: 22px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .shell{
+      width:100%;
+      height:100%;
+      border-radius: var(--r-xl);
+      border: 1px solid rgba(255,255,255,0.10);
+      background:
+        radial-gradient(700px 420px at 80% 14%, rgba(56,214,255,0.08), transparent 65%),
+        radial-gradient(720px 440px at 20% 88%, rgba(79,140,255,0.09), transparent 65%),
+        rgba(255,255,255,0.035);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+
+      display:grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    /* ===== Top bar ===== */
+    .topbar{
+      padding: 18px 22px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 18px;
+      border-bottom: 1px solid var(--line2);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width: 420px;
+    }
+
+    .logo{
+      width: 46px;
+      height: 46px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      position:relative;
+      overflow:hidden;
+      flex: 0 0 auto;
+      box-shadow: 0 18px 55px rgba(79,140,255,.12);
+    }
+    .logo::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:
+        radial-gradient(24px 24px at 35% 35%, rgba(56,214,255,0.98), transparent 60%),
+        radial-gradient(30px 30px at 70% 75%, rgba(79,140,255,0.98), transparent 62%),
+        linear-gradient(135deg, rgba(167,139,250,0.30), rgba(56,214,255,0.08));
+    }
+    .logo::after{
+      content:"EI";
+      position:absolute;
+      inset:0;
+      display:grid;
+      place-items:center;
+      font-weight: 950;
+      font-size: 13px;
+      letter-spacing: .4px;
+      color:#061126;
+      text-shadow: 0 8px 18px rgba(0,0,0,0.35);
+    }
+
+    .title h1{
+      margin:0;
+      font-size: 18px;
+      font-weight: 950;
+      letter-spacing: -0.25px;
+      line-height: 1.2;
+    }
+    .title p{
+      margin: 4px 0 0;
+      font-size: 12.5px;
+      color: var(--dim);
+      line-height: 1.45;
+    }
+
+    .actions{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+    }
+
+    .chip{
+      height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: .32px;
+      text-transform: uppercase;
+      color: rgba(234,240,255,0.78);
+    }
+    .dot{
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      box-shadow: 0 0 24px rgba(56,214,255,0.40);
+    }
+
+    .btn{
+      height: 38px;
+      padding: 0 14px;
+      border-radius: 14px;
+      border:none;
+      cursor:pointer;
+      text-decoration:none;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .28px;
+      transition: transform .15s ease;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      white-space:nowrap;
+    }
+    .btn:hover{ transform: translateY(-2px); }
+
+    .btn.ghost{
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: rgba(234,240,255,0.84);
+    }
+
+    .btn.primary{
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      color:#061126;
+      box-shadow: 0 18px 55px rgba(79,140,255,0.18);
+    }
+
+    /* ===== Layout ===== */
+    .layout{
+      display:grid;
+      grid-template-columns: 290px 1fr;
+      min-height:0;
+    }
+
+    /* ===== Left nav (no card style) ===== */
+    .nav{
+      padding: 18px 16px;
+      border-right: 1px solid var(--line2);
+      background: rgba(255,255,255,0.02);
+      min-height:0;
+      overflow:auto;
+    }
+    .nav::-webkit-scrollbar{ width:10px; }
+    .nav::-webkit-scrollbar-thumb{
+      background: rgba(255,255,255,0.12);
+      border-radius: 999px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+
+    .nav-title{
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: .22px;
+      color: rgba(234,240,255,0.84);
+      margin: 0 0 10px;
+      text-transform: uppercase;
+    }
+
+    .nav a{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 12px 12px;
+      border-radius: 14px;
+      text-decoration:none;
+      color: rgba(234,240,255,0.84);
+      font-weight: 850;
+      font-size: 12.5px;
+      margin-bottom: 8px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      transition: .15s ease;
+    }
+    .nav a:hover{
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(56,214,255,0.18);
+      transform: translateY(-2px);
+    }
+
+    .count{
+      height: 22px;
+      padding: 0 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 950;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: rgba(234,240,255,0.72);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-width: 34px;
+    }
+
+    /* ===== Report canvas ===== */
+    .report{
+      padding: 18px 22px;
+      min-height:0;
+      overflow:auto; /* ✅ only internal scroll */
+    }
+
+    .report::-webkit-scrollbar{ width:10px; }
+    .report::-webkit-scrollbar-thumb{
+      background: rgba(255,255,255,0.12);
+      border-radius: 999px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+
+    /* ===== Sections (no cards) ===== */
+    .section{
+      padding: 18px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .section:last-child{ border-bottom:none; }
+
+    .sec-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 18px;
+      margin-bottom: 12px;
+    }
+
+    .sec-head h2{
+      margin:0;
+      font-size: 13px;
+      font-weight: 950;
+      letter-spacing: .22px;
+      text-transform: uppercase;
+      color: rgba(234,240,255,0.86);
+    }
+
+    .sec-head p{
+      margin: 6px 0 0;
+      font-size: 12.6px;
+      color: rgba(234,240,255,0.56);
+      line-height: 1.55;
+      max-width: 720px;
+    }
+
+    /* ===== Summary row ===== */
+    .summary{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .metric{
+      padding: 14px 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.10);
+    }
+
+    .metric span{
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .28px;
+      color: rgba(234,240,255,0.55);
+      text-transform: uppercase;
+    }
+
+    .metric strong{
+      display:block;
+      margin-top: 6px;
+      font-size: 20px;
+      font-weight: 950;
+      letter-spacing: -0.4px;
+    }
+
+    /* ===== Platforms table ===== */
+    .table{
+      width:100%;
+      border-radius: 18px;
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns: 160px 1fr 140px 140px;
+      gap: 10px;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      align-items:center;
+      font-size: 12.7px;
+    }
+    .row:last-child{ border-bottom:none; }
+
+    .head-row{
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: .30px;
+      text-transform: uppercase;
+      color: rgba(234,240,255,0.55);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .plat{
+      font-weight: 950;
+      color: rgba(234,240,255,0.92);
+    }
+
+    .url a{
+      color: rgba(56,214,255,0.92);
+      text-decoration:none;
+      font-weight: 750;
+      word-break: break-all;
+    }
+    .url a:hover{ text-decoration: underline; }
+
+    .tag{
+      justify-self:start;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 950;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05);
+      color: rgba(234,240,255,0.72);
+    }
+
+    /* ===== Risk ===== */
+    .riskbar{
+      margin-top: 12px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      overflow:hidden;
+    }
+    .riskbar > div{
+      height:100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--cyan), var(--blue), var(--violet));
+      transition: width .8s ease;
+      box-shadow: 0 0 30px rgba(56,214,255,0.25);
+    }
+
+    .risk-scoreline{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 14px;
+    }
+
+    .risk-score{
+      font-size: 44px;
+      font-weight: 980;
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+
+    .risk-pill{
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: .30px;
+      text-transform: uppercase;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05);
+      color: rgba(234,240,255,0.78);
+    }
+    .risk-pill.low{ border-color: rgba(34,197,94,0.30); color: rgba(134,239,172,0.95);}
+    .risk-pill.medium{ border-color: rgba(245,158,11,0.30); color: rgba(253,230,138,0.95);}
+    .risk-pill.high{ border-color: rgba(239,68,68,0.35); color: rgba(254,202,202,0.95);}
+
+    /* ===== Reasons list ===== */
+    .reasons{
+      display:grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .reason{
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: rgba(234,240,255,0.76);
+      font-size: 12.6px;
+      line-height: 1.55;
+      display:flex;
+      justify-content:space-between;
+      gap: 12px;
+    }
+
+    /* responsive */
+    @media(max-width: 1000px){
+      html, body{ overflow:auto; }
+      .stage{ height:auto; }
+      .shell{ height:auto; }
+      .layout{ grid-template-columns: 1fr; }
+      .nav{ border-right:none; border-bottom: 1px solid rgba(255,255,255,0.08); }
+      .summary{ grid-template-columns: 1fr; }
+      .row{ grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 
 <body>
+  <main class="stage">
+    <section class="shell">
 
-<div class="container">
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div class="brand">
+          
+          <div class="title">
+            <h1>Exposure Intelligence Report</h1>
+            <p>AI-powered exposure analysis across identities, metadata, and correlation signals.</p>
+          </div>
+        </div>
 
-  <!-- ================= HERO ================= -->
-  <h1>📊 Exposure Intelligence Report</h1>
-  <p style="
-    text-align:center;
-    max-width:640px;
-    margin:14px auto 50px;
-    font-size:15px;
-    line-height:1.6;
-    color:#9ca3af;
-  ">
-    AI-powered OSINT exposure analysis across identities, media metadata,
-    and behavioral intelligence signals.
-  </p>
+        <div class="actions">
+          
+          <a class="btn ghost" href="/">Run New Scan</a>
+          <a class="btn primary" href="/download/pdf">Download PDF</a>
+        </div>
+      </header>
 
-  <!-- ================= SCAN SUMMARY ================= -->
-  <div class="card">
-    <h3 style="display:flex;align-items:center;gap:10px;">
-      <span style="color:#5eead4;">●</span> Scan Summary
-    </h3>
+      <!-- BODY -->
+      <div class="layout">
 
-    <p style="font-size:15px;">
-      Platforms Found:
-      <b style="color:#5eead4;">{{ data.platforms_found | length }}</b>
-      &nbsp; | &nbsp;
-      Signals Detected:
-      <b style="color:#38bdf8;">{{ risk.confidence_score // 15 }}</b>
-    </p>
+        <!-- NAV -->
+        <aside class="nav">
+          <div class="nav-title">Report Navigation</div>
 
-    <p class="scan-meta" style="margin-top:8px;">
-      Scan Time: {{ scan_time }}
-    </p>
-  </div>
+          
+          <a href="#platforms">Platforms Identified <span class="count">{{ data.platforms_found | length }}</span></a>
+          <a href="#risk">Overall Risk <span class="count">{{ risk.level }}</span></a>
+          <a href="#breakdown">Risk Breakdown <span class="count">4</span></a>
+          <a href="#why">Key Risk Factors <span class="count">{{ risk.reasons | length }}</span></a>
 
-  <!-- ================= PLATFORMS ================= -->
-  {% if data.platforms_found %}
-  <div class="card">
-    <h3 style="display:flex;align-items:center;gap:10px;">
-      <span style="color:#38bdf8;">●</span> Platforms Identified
-    </h3>
+          {% if data.image_metadata %}
+            <a href="#imgmeta">Image Metadata <span class="count">OSINT</span></a>
+          {% endif %}
+          {% if data.image_metadata and data.image_metadata.gps %}
+            <a href="#gps">GPS Location <span class="count">MAP</span></a>
+          {% endif %}
+          {% if data.video_risk and data.video_risk.metadata %}
+            <a href="#video">Video Analysis <span class="count">OSINT</span></a>
+          {% endif %}
+          {% if data.audio_risk and data.audio_risk.metadata %}
+            <a href="#audio">Audio Analysis <span class="count">OSINT</span></a>
+          {% endif %}
+        </aside>
 
-    <ul style="margin-top:14px;">
-      {% for platform, info in data.platforms_found.items() %}
-        <li style="margin-bottom:14px;">
-          <b style="font-size:15px;">{{ platform }}</b> —
-          <a href="{{ info.url }}" target="_blank">{{ info.url }}</a><br>
-          <span style="color:#9ca3af;font-size:13px;">
-            Confidence: {{ info.confidence }} |
-            Exposure Level: {{ info.richness }}
-          </span>
-        </li>
-      {% endfor %}
-    </ul>
-  </div>
-  {% endif %}
+        <!-- REPORT -->
+        <section class="report">
 
-  <!-- ================= IMAGE METADATA ================= -->
-  {% if data.image_metadata %}
-  <div class="card">
-    <h3 style="display:flex;align-items:center;gap:10px;">
-      <span style="color:#a855f7;">●</span> Image Metadata (OSINT)
-    </h3>
+          
 
-    <ul style="margin-top:14px;">
-      {% for k,v in data.image_metadata.items() %}
-        {% if k != "gps" %}
-        <li style="margin-bottom:8px;">
-          <b>{{ k }}:</b>
-          <span style="color:#cbd5f5;">{{ v }}</span>
-        </li>
-        {% endif %}
-      {% endfor %}
-    </ul>
-  </div>
-  {% endif %}
+          <!-- Platforms -->
+          {% if data.platforms_found %}
+          <div class="section" id="platforms">
+            <div class="sec-head">
+              <div>
+                <h2>Platforms Identified</h2>
+                <p>Detected public profiles and identity linkage indicators across platforms.</p>
+              </div>
+              <div class="tag">Identity correlation</div>
+            </div>
 
-  <!-- ================= VIDEO OSINT ================= -->
-{% if data.video_risk and data.video_risk.metadata %}
-<div class="card">
-  <h3 style="display:flex;align-items:center;gap:10px;">
-    <span style="color:#8b5cf6;">●</span> Video OSINT Analysis
-  </h3>
+            <div class="table">
+              <div class="row head-row">
+                <div>Platform</div>
+                <div>Profile / URL</div>
+                <div>Confidence</div>
+                <div>Exposure</div>
+              </div>
 
-  <p style="font-size:14px;color:#9ca3af;margin-bottom:12px;">
-    Risk Score: <b style="color:#c4b5fd;">{{ data.video_risk.risk }}</b>
-  </p>
+              {% for platform, info in data.platforms_found.items() %}
+              <div class="row">
+                <div class="plat">{{ platform }}</div>
+                <div class="url"><a href="{{ info.url }}" target="_blank">{{ info.url }}</a></div>
+                <div><span class="tag">{{ info.confidence }}</span></div>
+                <div><span class="tag">{{ info.richness }}</span></div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
 
-  {% if data.video_risk.signals %}
-  <ul style="margin-bottom:14px;">
-    {% for s in data.video_risk.signals %}
-      <li style="margin-bottom:6px;">🎥 {{ s }}</li>
-    {% endfor %}
-  </ul>
-  {% endif %}
+          <!-- Risk -->
+          <div class="section" id="risk">
+            <div class="sec-head">
+              <div>
+                <h2>Overall Risk</h2>
+                <p>Risk score derived from correlation confidence, evidence depth and surface exposure.</p>
+              </div>
+              <span class="risk-pill {{ risk.level|lower }}">{{ risk.level }}</span>
+            </div>
 
-  <ul style="margin-top:14px;">
-    {% for k, v in data.video_risk.metadata.items() %}
-      <li style="margin-bottom:8px;">
-        <b>{{ k }}:</b>
-        <span style="color:#cbd5f5;">{{ v }}</span>
-      </li>
-    {% endfor %}
-  </ul>
+            <div class="risk-scoreline">
+              <div>
+                <div style="font-size:13px;color:rgba(234,240,255,0.60);font-weight:800;">Exposure Risk Score</div>
+                <div class="risk-score">{{ risk.score }}</div>
+                <div style="font-size:12.5px;color:rgba(234,240,255,0.58);">out of 100</div>
+              </div>
+              <div class="tag">Evidence-backed scoring</div>
+            </div>
 
-  <p style="font-size:13px;color:#94a3b8;margin-top:14px;">
-    {{ data.video_risk.evidence }}
-  </p>
-</div>
-{% endif %}
+            <div class="riskbar">
+              <div class="risk-progress-fill" data-score="{{ risk.score }}"></div>
+            </div>
+          </div>
 
-  <!-- ================= AUDIO OSINT ================= -->
-{% if data.audio_risk and data.audio_risk.metadata %}
-<div class="card">
-  <h3 style="display:flex;align-items:center;gap:10px;">
-    <span style="color:#22c55e;">●</span> Audio OSINT Analysis
-  </h3>
+          <!-- Breakdown -->
+          <div class="section" id="breakdown">
+            <div class="sec-head">
+              <div>
+                <h2>Risk Breakdown</h2>
+                <p>Category weights highlight where exposure is coming from.</p>
+              </div>
+              <div class="tag">Breakdown</div>
+            </div>
 
-  <p style="font-size:14px;color:#9ca3af;margin-bottom:12px;">
-    Risk Score: <b style="color:#86efac;">{{ data.audio_risk.risk }}</b>
-  </p>
+            <div class="summary">
+              <div class="metric">
+                <span>Platform Exposure</span>
+                <strong>{{ risk.risk_breakdown.platform_exposure }}%</strong>
+              </div>
+              <div class="metric">
+                <span>Identity Correlation</span>
+                <strong>{{ risk.risk_breakdown.identity_correlation }}%</strong>
+              </div>
+              <div class="metric">
+                <span>Media & Text Risk</span>
+                <strong>{{ risk.risk_breakdown.media_metadata + risk.risk_breakdown.text_content }}%</strong>
+              </div>
+            </div>
+          </div>
 
-  {% if data.audio_risk.signals %}
-  <ul style="margin-bottom:14px;">
-    {% for s in data.audio_risk.signals %}
-      <li style="margin-bottom:6px;">🎧 {{ s }}</li>
-    {% endfor %}
-  </ul>
-  {% endif %}
+          <!-- Reasons -->
+          <div class="section" id="why">
+            <div class="sec-head">
+              <div>
+                <h2>Key Risk Factors</h2>
+                <p>Actionable reasons contributing to the exposure score (explainable output).</p>
+              </div>
+              <div class="tag">Reasons</div>
+            </div>
 
-  <ul style="margin-top:14px;">
-    {% for k, v in data.audio_risk.metadata.items() %}
-      <li style="margin-bottom:8px;">
-        <b>{{ k }}:</b>
-        <span style="color:#cbd5f5;">{{ v }}</span>
-      </li>
-    {% endfor %}
-  </ul>
+            <div class="reasons">
+              {% for r in risk.reasons %}
+              <div class="reason">
+                <div>{{ r }}</div>
+                <span class="tag">Signal</span>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
 
-  <p style="font-size:13px;color:#94a3b8;margin-top:14px;">
-    {{ data.audio_risk.evidence }}
-  </p>
-</div>
-{% endif %}
+          <!-- Image Metadata -->
+          {% if data.image_metadata %}
+          <div class="section" id="imgmeta">
+            <div class="sec-head">
+              <div>
+                <h2>Image Metadata</h2>
+                <p>EXIF and technical metadata extracted from uploaded media evidence.</p>
+              </div>
+              <div class="tag">Metadata</div>
+            </div>
 
+            <div class="summary" style="grid-template-columns:1fr 1fr;">
+              {% for k,v in data.image_metadata.items() %}
+                {% if k != "gps" %}
+                  <div class="metric">
+                    <span>{{ k }}</span>
+                    <strong style="font-size:14px;line-height:1.4;font-weight:900;">{{ v }}</strong>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
 
-  <!-- ================= GPS MAP ================= -->
-  {% if data.image_metadata and data.image_metadata.gps %}
-  <div class="card">
-    <h3 style="display:flex;align-items:center;gap:10px;">
-      <span style="color:#ef4444;">●</span> Image GPS Location
-    </h3>
+          <!-- GPS -->
+          {% if data.image_metadata and data.image_metadata.gps %}
+          <div class="section" id="gps">
+            <div class="sec-head">
+              <div>
+                <h2>GPS Location</h2>
+                <p>Detected approximate coordinate markers from image metadata.</p>
+              </div>
+              <div class="tag">Geo</div>
+            </div>
 
-    <p style="font-size:14px;color:#9ca3af;margin-bottom:12px;">
-      Latitude: {{ data.image_metadata.gps.lat }},
-      Longitude: {{ data.image_metadata.gps.lon }}
-    </p>
+            <iframe
+              width="100%"
+              height="280"
+              style="border-radius:18px;border:1px solid rgba(255,255,255,0.10);"
+              src="https://www.openstreetmap.org/export/embed.html?bbox={{ data.image_metadata.gps.lon - 0.01 }},{{ data.image_metadata.gps.lat - 0.01 }},{{ data.image_metadata.gps.lon + 0.01 }},{{ data.image_metadata.gps.lat + 0.01 }}&marker={{ data.image_metadata.gps.lat }},{{ data.image_metadata.gps.lon }}">
+            </iframe>
+          </div>
+          {% endif %}
 
-    <iframe
-      width="100%"
-      height="300"
-      style="border-radius:18px;border:none"
-      src="https://www.openstreetmap.org/export/embed.html?bbox={{ data.image_metadata.gps.lon - 0.01 }},{{ data.image_metadata.gps.lat - 0.01 }},{{ data.image_metadata.gps.lon + 0.01 }},{{ data.image_metadata.gps.lat + 0.01 }}&marker={{ data.image_metadata.gps.lat }},{{ data.image_metadata.gps.lon }}">
-    </iframe>
-  </div>
-  {% endif %}
+          <!-- Video -->
+          {% if data.video_risk and data.video_risk.metadata %}
+          <div class="section" id="video">
+            <div class="sec-head">
+              <div>
+                <h2>Video OSINT</h2>
+                <p>Signals indicating manipulation, compression artifacts, or risky metadata.</p>
+              </div>
+              <div class="tag">Synthetic media</div>
+            </div>
+            <div class="metric">
+              <span>Risk Score</span>
+              <strong>{{ data.video_risk.risk }}</strong>
+            </div>
+          </div>
+          {% endif %}
 
-  <!-- ================= OVERALL RISK ================= -->
-  <div class="card">
-    <div class="overall-risk">
-      <div>
-        <h3>Overall Exposure Risk</h3>
-        <span class="risk-badge {{ risk.level|lower }}">
-          {{ risk.level }}
-        </span>
+          <!-- Audio -->
+          {% if data.audio_risk and data.audio_risk.metadata %}
+          <div class="section" id="audio">
+            <div class="sec-head">
+              <div>
+                <h2>Audio OSINT</h2>
+                <p>Voice / waveform indicators and media evidence signals.</p>
+              </div>
+              <div class="tag">Verification</div>
+            </div>
+            <div class="metric">
+              <span>Risk Score</span>
+              <strong>{{ data.audio_risk.risk }}</strong>
+            </div>
+          </div>
+          {% endif %}
+
+        </section>
       </div>
-      <div class="risk-score">{{ risk.score }}/100</div>
-    </div>
+    </section>
+  </main>
 
-    <div class="risk-progress">
-      <div class="risk-progress-fill" data-score="{{ risk.score }}"></div>
-    </div>
-  </div>
-
-  <!-- ================= RISK BREAKDOWN ================= -->
-  <div class="card">
-    <h3 style="display:flex;align-items:center;gap:10px;">
-      <span style="color:#22c55e;">●</span> Risk Breakdown by Category
-    </h3>
-
-    <ul style="margin-top:14px;font-size:14px;">
-      <li>🌐 Platform Exposure: <b>{{ risk.risk_breakdown.platform_exposure }}%</b></li>
-      <li>🧠 Identity Correlation: <b>{{ risk.risk_breakdown.identity_correlation }}%</b></li>
-      <li>🖼 Media Metadata: <b>{{ risk.risk_breakdown.media_metadata }}%</b></li>
-      <li>📝 Text Content: <b>{{ risk.risk_breakdown.text_content }}%</b></li>
-    </ul>
-  </div>
-
-  <!-- ================= WHY ================= -->
-  <div class="card">
-    <h3 style="display:flex;align-items:center;gap:10px;">
-      <span style="color:#f59e0b;">●</span> Why This Risk?
-    </h3>
-
-    <ul style="margin-top:14px;">
-      {% for r in risk.reasons %}
-        <li style="margin-bottom:8px;">{{ r }}</li>
-      {% endfor %}
-    </ul>
-  </div>
-
-  <!-- ================= ACTION ================= -->
-  <div style="text-align:center;margin:60px 0 20px;display:flex;gap:22px;justify-content:center;flex-wrap:wrap;">
-
-    <a href="/" class="action-btn"
-       style="
-         padding:18px 34px;
-         border-radius:20px;
-         font-weight:900;
-         font-size:15px;
-         color:#001b22;
-         background:linear-gradient(135deg,#5eead4,#38bdf8,#a855f7);
-         box-shadow:0 0 40px rgba(94,234,212,0.45);
-         text-decoration:none;
-       ">
-      🔁 Run Another Scan
-    </a>
-
-    <a href="/download/pdf" class="action-btn"
-       style="
-         padding:18px 34px;
-         border-radius:20px;
-         font-weight:900;
-         font-size:15px;
-         color:#020617;
-         background:linear-gradient(135deg,#6366f1,#38bdf8);
-         box-shadow:0 0 40px rgba(99,102,241,0.45);
-         text-decoration:none;
-       ">
-      📄 Download Report (PDF)
-    </a>
-
-  </div>
-
-  <div class="disclaimer">
-    This report uses ethical Open Source Intelligence (OSINT) only.<br>
-    No private, paid, or restricted data sources are accessed.
-  </div>
-
-</div>
-
-<script>
-  window.addEventListener("load", () => {
-    document.querySelectorAll(".risk-progress-fill").forEach(bar => {
-      bar.style.width = bar.dataset.score + "%";
+  <script>
+    window.addEventListener("load", () => {
+      document.querySelectorAll(".risk-progress-fill").forEach(bar => {
+        bar.style.width = bar.dataset.score + "%";
+      });
     });
-  });
-</script>
-
+  </script>
 </body>
 </html>
