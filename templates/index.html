@@ -733,25 +733,50 @@
               </label>
 
               <div class="multi-grid">
+
                 <input type="text" name="instagram" placeholder="Instagram username" />
-                <input type="text" name="github" placeholder="GitHub username" />
-                <input type="text" name="linkedin" placeholder="LinkedIn username" />
+                <input type="text" name="facebook" placeholder="Facebook username" />
+                <input type="text" name="threads" placeholder="Threads username" />
               </div>
             </div>
           </div>
 
           <div class="upload">
-            <div class="upload-title">Media Evidence (optional)</div>
-            <div class="upload-note">Upload image/video/audio for metadata review and verification.</div>
+  <div class="upload-title">Media Evidence (optional)</div>
+  <div class="upload-note">
+    Upload image, video, or audio files for forensic metadata & authenticity checks.
+  </div>
 
-            <label class="upload-btn" for="media">Upload file</label>
-            <input id="media" type="file" name="media" hidden onchange="updateFilename(this)" />
+  <!-- IMAGE -->
+  <label class="upload-btn" for="image_file">🖼 Upload Image</label>
+  <input id="image_file" type="file" name="image_file" accept="image/*" hidden
+         onchange="updateFileMeta(this, 'imageMeta', 'imageName')" />
 
-            <div id="filemeta" class="filemeta" style="display:none;">
-              <div class="filename" id="filename"></div>
-              <button type="button" class="clearfile" onclick="clearFile()">Remove</button>
-            </div>
-          </div>
+  <div id="imageMeta" class="filemeta" style="display:none;">
+    <div class="filename" id="imageName"></div>
+    <button type="button" class="clearfile" onclick="clearFile('image_file','imageMeta')">Remove</button>
+  </div>
+
+  <!-- VIDEO -->
+  <label class="upload-btn" for="video_file">🎥 Upload Video</label>
+  <input id="video_file" type="file" name="video_file" accept="video/*" hidden
+         onchange="updateFileMeta(this, 'videoMeta', 'videoName')" />
+
+  <div id="videoMeta" class="filemeta" style="display:none;">
+    <div class="filename" id="videoName"></div>
+    <button type="button" class="clearfile" onclick="clearFile('video_file','videoMeta')">Remove</button>
+  </div>
+
+  <!-- AUDIO -->
+  <label class="upload-btn" for="audio_file">🔊 Upload Audio</label>
+  <input id="audio_file" type="file" name="audio_file" accept="audio/*" hidden
+         onchange="updateFileMeta(this, 'audioMeta', 'audioName')" />
+
+  <div id="audioMeta" class="filemeta" style="display:none;">
+    <div class="filename" id="audioName"></div>
+    <button type="button" class="clearfile" onclick="clearFile('audio_file','audioMeta')">Remove</button>
+  </div>
+</div>
 
         </div>
       </section>

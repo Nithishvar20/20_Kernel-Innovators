@@ -7,101 +7,63 @@ HEADERS = {
 TIMEOUT = 5
 
 
-def scan_username(username: str):
+def scan_username(username: str, platform: str | None = None):
+    """
+    OSINT-safe username scanner.
+    Supported platforms: Instagram, Facebook, Threads
+    """
+
     platforms_found = {}
     inconclusive = set()
+
+    if not username:
+        return {
+            "platforms_found": {},
+            "inconclusive_platforms": []
+        }
 
     def safe_get(url):
         return requests.get(url, headers=HEADERS, timeout=TIMEOUT)
 
     # =========================================================
-    # GITHUB — HIGH RELIABILITY
+    # INSTAGRAM
     # =========================================================
-    try:
-        url = f"https://github.com/{username}"
-        r = safe_get(url)
-        page = r.text.lower()
+    def check_instagram(uname):
+        try:
+            url = f"https://www.instagram.com/{uname}/"
+            r = safe_get(url)
+            page = r.text.lower()
 
-        if r.status_code == 200 and "repositories" in page and "page not found" not in page:
-            platforms_found["GitHub"] = {
-                "url": url,
-                "confidence": "HIGH",
-                "visibility": "PUBLIC",
-                "richness": "LOW",
-                "evidence": "Public GitHub profile detected (technical data only)"
-            }
-    except:
-        pass
+            not_found = [
+                "profile isn't available",
+                "sorry, this page isn't available",
+                "page not found",
+                "the link you followed may be broken"
+            ]
 
-    # =========================================================
-    # LINKEDIN — LOGIN WALLED
-    # =========================================================
-    try:
-        url = f"https://www.linkedin.com/in/{username}"
-        r = safe_get(url)
-        page = r.text.lower()
+            exists = (
+                r.status_code == 200
+                and '"username"' in page
+                and not any(x in page for x in not_found)
+            )
 
-        if (
-            r.status_code == 200
-            and "experience" in page
-            and "education" in page
-            and "sign in" not in page
-        ):
-            platforms_found["LinkedIn"] = {
-                "url": url,
-                "confidence": "LOW",
-                "visibility": "PUBLIC",
-                "richness": "LOW",
-                "evidence": "Public LinkedIn sections visible without login"
-            }
-        else:
-            inconclusive.add("LinkedIn")
-    except:
-        inconclusive.add("LinkedIn")
+            if not exists:
+                return None
 
-    # =========================================================
-    # INSTAGRAM — OSINT-SAFE (NO FALSE LABELS)
-    # =========================================================
-    try:
-        url = f"https://www.instagram.com/{username}/"
-        r = safe_get(url)
-        page = r.text.lower()
-
-        not_found = [
-            "profile isn't available",
-            "sorry, this page isn't available",
-            "the link you followed may be broken",
-            "page not found"
-        ]
-
-        exists = (
-            r.status_code == 200
-            and '"username"' in page
-            and '"profilepage_' in page
-            and not any(x in page for x in not_found)
-        )
-
-        if exists:
             post_count = page.count('"shortcode"')
 
             private_signals = [
                 '"is_private":true',
                 "this account is private",
                 "follow to see their photos",
-                "only approved followers"
             ]
 
-            if any(p in page for p in private_signals):
-                visibility = "PRIVATE"
-                evidence = "Instagram account exists but content is private"
-            elif post_count > 0:
-                visibility = "PUBLIC"
-                evidence = "Public Instagram profile with visible posts"
-            else:
-                visibility = "EXISTS (VISIBILITY UNKNOWN)"
-                evidence = "Instagram account exists but visibility could not be reliably determined"
+            visibility = (
+                "PRIVATE" if any(p in page for p in private_signals)
+                else "PUBLIC"
+            )
 
-            platforms_found["Instagram"] = {
+            return {
                 "url": url,
                 "confidence": "HIGH",
                 "visibility": visibility,
@@ -110,97 +72,111 @@ def scan_username(username: str):
                     "MEDIUM" if post_count > 5 else
                     "LOW"
                 ),
-                "evidence": evidence
+                "evidence": (
+                    "Instagram account exists (private)"
+                    if visibility == "PRIVATE"
+                    else "Public Instagram profile with visible posts"
+                )
             }
 
-    except:
-        pass
+        except Exception:
+            return None
 
-    
     # =========================================================
-    # FACEBOOK — HIGH FALSE POSITIVE RISK
+    # FACEBOOK
     # =========================================================
-    try:
-        url = f"https://www.facebook.com/{username}"
-        r = safe_get(url)
-        page = r.text.lower()
+    def check_facebook(uname):
+        try:
+            url = f"https://www.facebook.com/{uname}"
+            r = safe_get(url)
+            page = r.text.lower()
 
-        blockers = [
-            "this content isn't available",
-            "content not available",
-            "log in to facebook",
-            "create new account",
-            "page not found",
-            "go to feed"
-        ]
+            blockers = [
+                "log in to facebook",
+                "this content isn't available",
+                "page not found",
+                "create new account",
+            ]
 
-        strong = all(x in page for x in ["timeline", "friends", "photos"])
+            strong_signals = all(
+                x in page for x in ["timeline", "friends", "photos"]
+            )
 
-        if r.status_code == 200 and strong and not any(b in page for b in blockers):
-            post_count = page.count("post")
+            if r.status_code == 200 and strong_signals and not any(b in page for b in blockers):
+                post_count = page.count("post")
 
-            platforms_found["Facebook"] = {
-                "url": url,
-                "confidence": "LOW",
-                "visibility": "PUBLIC",
-                "richness": (
-                    "HIGH" if post_count > 20 else
-                    "MEDIUM" if post_count > 5 else
-                    "LOW"
-                ),
-                "evidence": "Public Facebook timeline with visible sections"
-            }
-        else:
-            inconclusive.add("Facebook")
-    except:
-        inconclusive.add("Facebook")
+                return {
+                    "url": url,
+                    "confidence": "LOW",
+                    "visibility": "PUBLIC",
+                    "richness": (
+                        "HIGH" if post_count > 20 else
+                        "MEDIUM" if post_count > 5 else
+                        "LOW"
+                    ),
+                    "evidence": "Public Facebook timeline detected"
+                }
+
+            return None
+
+        except Exception:
+            return None
 
     # =========================================================
     # THREADS
     # =========================================================
-    try:
-        url = f"https://www.threads.net/@{username}"
-        r = safe_get(url)
-        page = r.text.lower()
+    def check_threads(uname):
+        try:
+            url = f"https://www.threads.net/@{uname}"
+            r = safe_get(url)
+            page = r.text.lower()
 
-        if (
-            r.status_code == 200
-            and "threads" in page
-            and "page not found" not in page
-            and "log in" not in page
-        ):
-            platforms_found["Threads"] = {
-                "url": url,
-                "confidence": "MEDIUM",
-                "visibility": "PUBLIC",
-                "richness": "MEDIUM",
-                "evidence": "Public Threads profile detected"
-            }
-    except:
-        pass
+            if (
+                r.status_code == 200
+                and "threads" in page
+                and "page not found" not in page
+                and "log in" not in page
+            ):
+                return {
+                    "url": url,
+                    "confidence": "MEDIUM",
+                    "visibility": "PUBLIC",
+                    "richness": "MEDIUM",
+                    "evidence": "Public Threads profile detected"
+                }
+
+            return None
+
+        except Exception:
+            return None
 
     # =========================================================
-    # REDDIT
+    # PLATFORM DISPATCH
     # =========================================================
-    try:
-        url = f"https://www.reddit.com/user/{username}"
-        r = safe_get(url)
-        page = r.text.lower()
+    checks = {
+        "Instagram": check_instagram,
+        "Facebook": check_facebook,
+        "Threads": check_threads
+    }
 
-        if (
-            r.status_code == 200
-            and "karma" in page
-            and "this user has been suspended" not in page
-        ):
-            platforms_found["Reddit"] = {
-                "url": url,
-                "confidence": "HIGH",
-                "visibility": "PUBLIC",
-                "richness": "HIGH",
-                "evidence": "Public Reddit activity detected"
-            }
-    except:
-        pass
+    # ---- Platform-wise scan ----
+    if platform:
+        checker = checks.get(platform)
+        if checker:
+            result = checker(username)
+            if result:
+                platforms_found[platform] = result
+            else:
+                inconclusive.add(platform)
+
+    # ---- Single username scan ----
+    else:
+        for plat, checker in checks.items():
+            result = checker(username)
+            if result:
+                platforms_found[plat] = result
+            else:
+                inconclusive.add(plat)
 
     return {
         "platforms_found": platforms_found,

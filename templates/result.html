@@ -643,27 +643,29 @@
 
           <!-- Image Metadata -->
           {% if data.image_metadata %}
-          <div class="section" id="imgmeta">
-            <div class="sec-head">
-              <div>
-                <h2>Image Metadata</h2>
-                <p>EXIF and technical metadata extracted from uploaded media evidence.</p>
-              </div>
-              <div class="tag">Metadata</div>
-            </div>
+<div class="section" id="imgmeta">
+  <div class="sec-head">
+    <div>
+      <h2>Image Metadata</h2>
+      <p>Complete EXIF and technical metadata extracted from the image.</p>
+    </div>
+    <div class="tag">Image OSINT</div>
+  </div>
 
-            <div class="summary" style="grid-template-columns:1fr 1fr;">
-              {% for k,v in data.image_metadata.items() %}
-                {% if k != "gps" %}
-                  <div class="metric">
-                    <span>{{ k }}</span>
-                    <strong style="font-size:14px;line-height:1.4;font-weight:900;">{{ v }}</strong>
-                  </div>
-                {% endif %}
-              {% endfor %}
-            </div>
-          </div>
-          {% endif %}
+  <div class="summary" style="grid-template-columns:1fr 1fr;">
+    {% for key, value in data.image_metadata.items() %}
+      {% if key != "gps" %}
+      <div class="metric">
+        <span>{{ key }}</span>
+        <strong style="font-size:14px;line-height:1.4;">
+          {{ value }}
+        </strong>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
 
           <!-- GPS -->
           {% if data.image_metadata and data.image_metadata.gps %}
@@ -686,39 +688,70 @@
           {% endif %}
 
           <!-- Video -->
-          {% if data.video_risk and data.video_risk.metadata %}
-          <div class="section" id="video">
-            <div class="sec-head">
-              <div>
-                <h2>Video OSINT</h2>
-                <p>Signals indicating manipulation, compression artifacts, or risky metadata.</p>
-              </div>
-              <div class="tag">Synthetic media</div>
-            </div>
-            <div class="metric">
-              <span>Risk Score</span>
-              <strong>{{ data.video_risk.risk }}</strong>
-            </div>
-          </div>
-          {% endif %}
+          {% if data.video_risk %}
+<div class="section" id="video">
+  <div class="sec-head">
+    <div>
+      <h2>Video Metadata & OSINT</h2>
+      <p>Extracted technical metadata and forensic indicators.</p>
+    </div>
+    <div class="tag">Video</div>
+  </div>
+
+  <div class="summary" style="grid-template-columns:1fr 1fr;">
+    {% for k, v in data.video_risk.metadata.items() %}
+      <div class="metric">
+        <span>{{ k }}</span>
+        <strong style="font-size:14px;">{{ v }}</strong>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="reasons">
+    {% for s in data.video_risk.signals %}
+      <div class="reason">⚠️ {{ s }}</div>
+    {% endfor %}
+  </div>
+
+  <div class="metric">
+    <span>Evidence</span>
+    <strong style="font-size:13px;">{{ data.video_risk.evidence }}</strong>
+  </div>
+</div>
+{% endif %}
 
           <!-- Audio -->
-          {% if data.audio_risk and data.audio_risk.metadata %}
-          <div class="section" id="audio">
-            <div class="sec-head">
-              <div>
-                <h2>Audio OSINT</h2>
-                <p>Voice / waveform indicators and media evidence signals.</p>
-              </div>
-              <div class="tag">Verification</div>
-            </div>
-            <div class="metric">
-              <span>Risk Score</span>
-              <strong>{{ data.audio_risk.risk }}</strong>
-            </div>
-          </div>
-          {% endif %}
+          {% if data.audio_risk %}
+<div class="section" id="audio">
+  <div class="sec-head">
+    <div>
+      <h2>Audio Metadata & OSINT</h2>
+      <p>Waveform, codec, and recording fingerprint analysis.</p>
+    </div>
+    <div class="tag">Audio</div>
+  </div>
 
+  <div class="summary" style="grid-template-columns:1fr 1fr;">
+    {% for k, v in data.audio_risk.metadata.items() %}
+      <div class="metric">
+        <span>{{ k }}</span>
+        <strong style="font-size:14px;">{{ v }}</strong>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="reasons">
+    {% for s in data.audio_risk.signals %}
+      <div class="reason">⚠️ {{ s }}</div>
+    {% endfor %}
+  </div>
+
+  <div class="metric">
+    <span>Evidence</span>
+    <strong style="font-size:13px;">{{ data.audio_risk.evidence }}</strong>
+  </div>
+</div>
+{% endif %}
         </section>
       </div>
     </section>

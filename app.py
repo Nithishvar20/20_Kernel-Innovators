@@ -111,12 +111,32 @@ def run_scan():
         audio_risk = analyze_audio(path)
 
     # -------- USERNAME --------
+    
     if mode == "single":
         username = request.form.get("single_username")
         if username:
             res = scan_username(username)
             platforms_found = res.get("platforms_found", {})
             inconclusive.update(res.get("inconclusive_platforms", []))
+
+    else:
+        platform_map = {
+            "Instagram": request.form.get("instagram"),
+            "Facebook": request.form.get("facebook"),
+            "Threads": request.form.get("threads"),
+        }
+
+        for platform, uname in platform_map.items():
+            if not uname:
+                continue
+    
+            res = scan_username(uname, platform=platform)
+
+            pf = res.get("platforms_found", {})
+            if platform in pf:
+                platforms_found[platform] = pf[platform]
+            else:
+                inconclusive.add(platform)
 
     # -------- TEXT --------
     text_input = request.form.get("text_input", "")
