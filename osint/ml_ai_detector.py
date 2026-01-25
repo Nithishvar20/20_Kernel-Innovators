@@ -1,10 +1,13 @@
 import torch
 import torchvision.transforms as transforms
 from PIL import Image
-import torchvision.models as models
+from torchvision import models
+from torchvision.models import MobileNet_V2_Weights
 
 # Load pretrained MobileNet
-model = models.mobilenet_v2(pretrained=True)
+weights = MobileNet_V2_Weights.DEFAULT
+model = models.mobilenet_v2(weights=weights)
+model.eval()
 model.eval()
 
 # ImageNet normalization

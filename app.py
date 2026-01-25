@@ -14,6 +14,9 @@ from osint.history import save_scan, compare_last_scan
 from osint.reverse_osint import detect_trackers
 from osint.text_osint import analyze_text
 from osint.geo_osint import infer_location
+from osint.web_exposure import analyze_website_exposure
+from osint.username_discovery import discover_username
+from osint.username_enumerator import enumerate_username
 
 # OPTIONAL MEDIA OSINT
 try:
@@ -70,6 +73,58 @@ def ai_image_upload():
         filename=image.filename,
         result=ai_result
     )
+@app.route("/web-exposure")
+def web_exposure():
+    return render_template("web_exposure.html")
+
+
+@app.route("/web-exposure/scan", methods=["POST"])
+def web_exposure_scan():
+    target = request.form.get("target")
+
+    if not target:
+        return render_template(
+            "web_exposure.html",
+            error="Please enter a domain or URL"
+        )
+
+    result = analyze_website_exposure(target)
+
+    return render_template(
+        "web_exposure_result.html",
+        result=result
+    )
+@app.route("/username-exposure", methods=["GET", "POST"])
+def username_exposure():
+    result = None
+
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        if username:
+            result = discover_username(username)
+
+    return render_template("username_exposure.html", result=result)
+
+@app.route("/username-osint", methods=["GET", "POST"])
+def username_osint():
+    if request.method == "POST":
+        username = request.form.get("username")
+
+        if not username:
+            return render_template(
+                "username_scan.html",
+                error="Username is required"
+            )
+
+        results = enumerate_username(username)
+
+        return render_template(
+            "username_result.html",
+            username=username,
+            results=results
+        )
+
+    return render_template("username_scan.html")
 
 # ================= SCAN LOGIC =================
 
@@ -208,12 +263,12 @@ def download_pdf():
         if y < min_y:
             new_page()
         c.setFont("Helvetica-Bold" if bold else "Helvetica", size)
-        c.drawString(margin_x + indent, y, text)
+        c.drawString(margin_x + indent, y, str(text))
         y -= size + 6
 
     def write_link(url, indent=0):
         nonlocal y
-        if not url.startswith("http"):
+        if not url or not url.startswith("http"):
             return
         if y < min_y:
             new_page()
@@ -228,24 +283,73 @@ def download_pdf():
     data = LAST_SCAN["data"]
     risk = LAST_SCAN["risk"]
 
+    # ================= TITLE =================
     write("Exposure Intelligence Report", bold=True, size=18)
     write(f"Scan Time: {LAST_SCAN['scan_time']}")
     y -= 10
 
-    write("Platforms Found", bold=True, size=14)
-    for p, info in data["platforms_found"].items():
+    # ================= PLATFORMS =================
+    write("Platforms Identified", bold=True, size=14)
+    for p, info in data.get("platforms_found", {}).items():
         write(p, bold=True, indent=10)
-        if info.get("url"):
-            write_link(info["url"], indent=20)
+        if isinstance(info, dict):
+            write_link(info.get("url"), indent=20)
+
+    if data.get("inconclusive_platforms"):
+        y -= 6
+        write("Inconclusive Platforms", bold=True, indent=10)
+        for p in data["inconclusive_platforms"]:
+            write(f"- {p}", indent=20)
 
     y -= 10
-    write("Risk Summary", bold=True, size=14)
-    write(f"Score: {risk['score']} / 100", indent=10)
-    write(f"Level: {risk['level']}", indent=10)
 
-    c.showPage()
+    # ================= RISK SUMMARY =================
+    write("Overall Risk Assessment", bold=True, size=14)
+    write(f"Risk Score: {risk.get('score')} / 100", indent=10)
+    write(f"Risk Level: {risk.get('level')}", indent=10)
+    y -= 10
+
+    # ================= IMAGE METADATA =================
+    if data.get("image_metadata"):
+        write("Image Metadata & OSINT", bold=True, size=14)
+        for k, v in data["image_metadata"].items():
+            write(f"{k}: {v}", indent=10)
+        y -= 10
+
+    # ================= VIDEO ANALYSIS =================
+    if data.get("video_risk"):
+        write("Video Metadata & Fingerprinting", bold=True, size=14)
+        for k, v in data["video_risk"].items():
+            if isinstance(v, list):
+                write(f"{k}:", bold=True, indent=10)
+                for item in v:
+                    write(f"- {item}", indent=20)
+            else:
+                write(f"{k}: {v}", indent=10)
+        y -= 10
+
+    # ================= AUDIO ANALYSIS =================
+    if data.get("audio_risk"):
+        write("Audio Metadata & OSINT", bold=True, size=14)
+        for k, v in data["audio_risk"].items():
+            write(f"{k}: {v}", indent=10)
+        y -= 10
+
+    # ================= TEXT OSINT =================
+    if data.get("text_risk"):
+        write("Text OSINT & Content Signals", bold=True, size=14)
+        for k, v in data["text_risk"].items():
+            write(f"{k}: {v}", indent=10)
+        y -= 10
+
+    # ================= GEO INFERENCE =================
+    if data.get("geo_risk"):
+        write("Geolocation Inference", bold=True, size=14)
+        for k, v in data["geo_risk"].items():
+            write(f"{k}: {v}", indent=10)
+        y -= 10
+
     c.save()
-
     return send_file(file_path, as_attachment=True)
 
 # ================= RUN =================

@@ -13,3 +13,4 @@ reportlab
 torch
 torchvision
 torchaudio
+dnspython

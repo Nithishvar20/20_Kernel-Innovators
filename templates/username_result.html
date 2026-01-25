@@ -1,0 +1,27 @@
+<h2>Results for: {{ username }}</h2>
+
+<table border="1" cellpadding="8">
+  <tr>
+    <th>Platform</th>
+    <th>Status</th>
+    <th>Confidence</th>
+    <th>Profile</th>
+  </tr>
+
+  {% for platform, info in results.items() %}
+  <tr>
+    <td>{{ platform }}</td>
+    <td>{{ info.status }}</td>
+    <td>{{ info.confidence }}</td>
+    <td>
+      {% if info.url %}
+        <a href="{{ info.url }}" target="_blank">Open</a>
+      {% else %}
+        —
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+<a href="/username-osint">Run Another Scan</a>

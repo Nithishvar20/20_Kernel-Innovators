@@ -616,13 +616,13 @@
   }
 </style>
 
+
 <script>
   function toggleMode(mode){
     const single = document.getElementById('single');
     const multi = document.getElementById('multi');
     const singleBox = document.getElementById('singleBox');
     const multiBox = document.getElementById('multiBox');
-
     const leftPanel = document.getElementById("leftPanel");
     const leftBody  = document.getElementById("leftBody");
 
@@ -635,19 +635,19 @@
     document.getElementById('mode_single').checked = (mode === 'single');
     document.getElementById('mode_multi').checked  = (mode === 'multi');
 
-    /* left scroll only for platform-wise */
     if(mode === "multi"){
       leftPanel.classList.add("scrollable");
     } else {
-      leftPanel.classList.remove("scrollable");
+      leftPanel.classList.add("scrollable");
       if(leftBody) leftBody.scrollTop = 0;
     }
   }
 
-  function updateFilename(input){
+  /* ✅ SHOW UPLOADED FILE NAME */
+  function updateFileMeta(input, metaId, nameId){
     const file = input.files && input.files[0];
-    const meta = document.getElementById("filemeta");
-    const name = document.getElementById("filename");
+    const meta = document.getElementById(metaId);
+    const name = document.getElementById(nameId);
 
     if(file){
       meta.style.display = "flex";
@@ -658,10 +658,17 @@
     }
   }
 
-  function clearFile(){
-    const fileInput = document.getElementById("media");
-    fileInput.value = "";
-    updateFilename(fileInput);
+  /* ✅ CLEAR FILE */
+  function clearFile(inputId, metaId){
+    const input = document.getElementById(inputId);
+    const meta  = document.getElementById(metaId);
+
+    if(input){
+      input.value = "";
+    }
+    if(meta){
+      meta.style.display = "none";
+    }
   }
 </script>
 </head>

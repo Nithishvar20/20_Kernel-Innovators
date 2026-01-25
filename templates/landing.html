@@ -237,6 +237,17 @@
     gap: 14px;
     align-items:center;
   }
+  .cta{
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  gap: 14px 16px;
+  align-items: start;
+}
+
+.cta-stack{
+  display: contents;
+}
 
   .btn{
     height: 50px;
@@ -531,10 +542,25 @@
       Detect exposure early. Produce clear evidence. Reduce risk with confidence.
     </div>
 
-    <div class="cta">
-      <a class="btn primary" href="/scan">Start Exposure Scan</a>
-      <a class="btn secondary" href="/ai-image-detector">AI Image Check</a>
-    </div>
+   <div class="cta">
+
+  <a class="btn primary" href="/scan">
+    Start Exposure Scan
+  </a>
+
+  <a class="btn secondary" href="/ai-image-detector">
+    AI Image Check
+  </a>
+
+  <a class="btn secondary" href="/username-osint">
+     Username Footprint Scan
+  </a>
+
+  <a class="btn secondary" href="/web-exposure">
+     Website Exposure Check
+  </a>
+
+</div>
 
     <div class="trust">
       Ethical OSINT only • No private data access • Evidence-first output
