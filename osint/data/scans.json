@@ -1,0 +1,137 @@
+[
+  {
+    "platforms_found": {
+      "Instagram": {
+        "url": "https://www.instagram.com/nithishvar_A20/",
+        "confidence": "HIGH",
+        "visibility": "PUBLIC",
+        "richness": "LOW",
+        "evidence": "Public Instagram profile with visible posts"
+      },
+      "Facebook": {
+        "url": "https://www.facebook.com/nithishvar.arivazhagan.3",
+        "confidence": "LOW",
+        "visibility": "PUBLIC",
+        "richness": "HIGH",
+        "evidence": "Public Facebook timeline detected"
+      },
+      "Threads": {
+        "url": "https://www.threads.net/@nithishvar_A20",
+        "confidence": "MEDIUM",
+        "visibility": "PUBLIC",
+        "richness": "MEDIUM",
+        "evidence": "Public Threads profile detected"
+      }
+    },
+    "inconclusive_platforms": [],
+    "text_risk": {
+      "risk": 20,
+      "findings": [
+        "Text contains potential personal identifier: 'address'",
+        "Text contains potential personal identifier: 'college'",
+        "Text contains potential personal identifier: 'school'"
+      ]
+    },
+    "geo_risk": null,
+    "image_metadata": {
+      "Make": "NIKON CORPORATION",
+      "Model": "NIKON D7500",
+      "Software": "Ver.1.12 ",
+      "DateTime": "2026:01:29 12:01:11",
+      "DateTimeOriginal": "2026:01:29 12:01:11",
+      "FocalLength": "50.0",
+      "ExposureTime": "0.0015625",
+      "FNumber": "7.1",
+      "ISOSpeedRatings": "320"
+    },
+    "video_risk": {
+      "risk": 11,
+      "signals": [
+        "Video metadata reveals recording device or software",
+        "Video resolution provides device fingerprint",
+        "Video frame rate provides technical fingerprint"
+      ],
+      "metadata": {
+        "File Name": "big_buck_bunny.webm",
+        "File Size (MB)": 4.84,
+        "Duration (seconds)": 61.51,
+        "Container Format": "matroska,webm",
+        "Overall Bitrate": "659555",
+        "Video Codec": "vp8",
+        "Codec Description": "On2 VP8",
+        "Resolution": "640x360",
+        "Frame Rate": "24/1",
+        "Pixel Format": "yuv420p",
+        "Encoder": "Flix"
+      },
+      "evidence": "Video OSINT analysis extracted embedded metadata, device fingerprints, timeline indicators, and identity-linked tags."
+    },
+    "audio_risk": {
+      "risk": 3,
+      "signals": [
+        "Audio technical fingerprint detected"
+      ],
+      "metadata": {
+        "File Name": "audio_2-104952-B-16.wav",
+        "File Size (MB)": 0.42,
+        "Duration (seconds)": 5.0,
+        "Container Format": "wav",
+        "Overall Bitrate": "705670",
+        "Audio Codec": "pcm_s16le",
+        "Codec Description": "PCM signed 16-bit little-endian",
+        "Sample Rate (Hz)": "44100",
+        "Channels": 1,
+        "Bits Per Sample": 16
+      },
+      "evidence": "Audio OSINT analysis extracted embedded metadata, technical fingerprints, and potential identity indicators."
+    }
+  },
+  {
+    "platforms_found": {
+      "Instagram": {
+        "url": "https://www.instagram.com/manoj_adapakala/",
+        "confidence": "HIGH",
+        "visibility": "PUBLIC",
+        "richness": "LOW",
+        "evidence": "Public Instagram profile with visible posts"
+      }
+    },
+    "inconclusive_platforms": [],
+    "text_risk": {},
+    "geo_risk": {},
+    "image_metadata": null,
+    "video_risk": {},
+    "audio_risk": {}
+  },
+  {
+    "platforms_found": {
+      "Instagram": {
+        "url": "https://www.instagram.com/yasi/",
+        "confidence": "HIGH",
+        "visibility": "PUBLIC",
+        "richness": "LOW",
+        "evidence": "Public Instagram profile with visible posts"
+      },
+      "Facebook": {
+        "url": "https://www.facebook.com/yasi",
+        "confidence": "LOW",
+        "visibility": "PUBLIC",
+        "richness": "LOW",
+        "evidence": "Public Facebook timeline detected"
+      },
+      "Threads": {
+        "url": "https://www.threads.net/@yasi",
+        "confidence": "MEDIUM",
+        "visibility": "PUBLIC",
+        "richness": "MEDIUM",
+        "evidence": "Public Threads profile detected"
+      }
+    },
+    "inconclusive_platforms": [],
+    "text_risk": {},
+    "geo_risk": {},
+    "image_metadata": null,
+    "video_risk": {},
+    "audio_risk": {}
+  }
+]

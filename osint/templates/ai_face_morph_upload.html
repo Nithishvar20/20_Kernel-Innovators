@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Face Morph Detection</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+  :root{
+    --bg0:#070A12;
+    --bg1:#0B1630;
+    --bg2:#07142A;
+
+    --text:#EAF0FF;
+    --muted: rgba(234,240,255,0.72);
+
+    --blue:#4F8CFF;
+    --cyan:#38D6FF;
+
+    --card: rgba(255,255,255,0.06);
+    --border: rgba(255,255,255,0.10);
+    --shadow: 0 22px 70px rgba(0,0,0,0.55);
+
+    --radius: 18px;
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family: "Inter", system-ui, -apple-system, Segoe UI, sans-serif;
+    color: var(--text);
+    background:
+      radial-gradient(900px 600px at 10% 10%, rgba(56,214,255,0.14), transparent 60%),
+      radial-gradient(900px 600px at 90% 20%, rgba(79,140,255,0.14), transparent 60%),
+      linear-gradient(180deg, var(--bg0), var(--bg1), var(--bg2));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:30px;
+  }
+
+  .container{
+    width: min(520px, 100%);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding:28px 26px;
+  }
+
+  .title{
+    font-size:28px;
+    font-weight:900;
+    letter-spacing:-0.6px;
+    margin:0;
+  }
+
+  .subtitle{
+    margin-top:8px;
+    font-size:14px;
+    line-height:1.6;
+    color: var(--muted);
+  }
+
+  .badge{
+    margin-top:14px;
+    display:inline-block;
+    padding:6px 12px;
+    border-radius:999px;
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    color:#061126;
+    font-size:11px;
+    font-weight:900;
+    letter-spacing:.4px;
+  }
+
+  .upload-box{
+    margin-top:22px;
+    padding:22px;
+    border-radius:14px;
+    border: 1px dashed rgba(255,255,255,0.20);
+    text-align:center;
+  }
+
+  input[type="file"]{
+    color: var(--muted);
+    font-size:13px;
+  }
+
+  .actions{
+    margin-top:22px;
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+
+  .btn{
+    height:46px;
+    padding:0 22px;
+    border-radius:14px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    font-size:14px;
+    font-weight:900;
+    letter-spacing:.4px;
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    color:#061126;
+    box-shadow: 0 14px 40px rgba(79,140,255,0.35);
+    transition: transform .18s ease, box-shadow .18s ease;
+    border:none;
+    cursor:pointer;
+  }
+
+  .btn.secondary{
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+    box-shadow:none;
+    border:1px solid var(--border);
+  }
+
+  .btn:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 18px 55px rgba(56,214,255,0.35);
+  }
+
+  .error{
+    margin-top:14px;
+    padding:10px 12px;
+    border-radius:12px;
+    background: rgba(239,68,68,0.12);
+    border: 1px solid rgba(239,68,68,0.22);
+    color:#FCA5A5;
+    font-size:13px;
+    font-weight:700;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h2 class="title">AI Face Morph Detection</h2>
+  <p class="subtitle">
+    Upload a group image to identify AI-morphed individuals using
+    face-level analysis.
+  </p>
+
+  <span class="badge">PROTOTYPE · FACE-LEVEL</span>
+
+  {% if error %}
+    <div class="error">{{ error }}</div>
+  {% endif %}
+
+  <form action="/ai-face-morph" method="POST" enctype="multipart/form-data">
+    <div class="upload-box">
+      <input type="file" name="image" required>
+    </div>
+
+    <div class="actions">
+      <button class="btn" type="submit">Analyze Image</button>
+      <a class="btn secondary" href="/">Back to Dashboard</a>
+    </div>
+  </form>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Face Morph Detection Result</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+  :root{
+    --bg0:#070A12;
+    --bg1:#0B1630;
+    --bg2:#07142A;
+
+    --text:#EAF0FF;
+    --muted: rgba(234,240,255,0.72);
+
+    --blue:#4F8CFF;
+    --cyan:#38D6FF;
+    --red:#EF4444;
+    --green:#22C55E;
+
+    --card: rgba(255,255,255,0.06);
+    --border: rgba(255,255,255,0.10);
+    --shadow: 0 22px 70px rgba(0,0,0,0.55);
+
+    --radius: 18px;
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family: "Inter", system-ui, -apple-system, Segoe UI, sans-serif;
+    color: var(--text);
+    background:
+      radial-gradient(900px 600px at 10% 10%, rgba(56,214,255,0.14), transparent 60%),
+      radial-gradient(900px 600px at 90% 20%, rgba(79,140,255,0.14), transparent 60%),
+      linear-gradient(180deg, var(--bg0), var(--bg1), var(--bg2));
+    display:flex;
+    justify-content:center;
+    padding:40px 20px;
+  }
+
+  .container{
+    width: min(1100px, 100%);
+    display:grid;
+    gap:24px;
+  }
+
+  .header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+  }
+
+  .header h2{
+    margin:0;
+    font-size:34px;
+    font-weight:900;
+    letter-spacing:-0.8px;
+  }
+
+  .badge{
+    padding:8px 14px;
+    border-radius:999px;
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    color:#061126;
+    font-size:12px;
+    font-weight:900;
+    letter-spacing:.4px;
+  }
+
+  .card{
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding:22px;
+  }
+
+  .image-wrap{
+    text-align:center;
+  }
+
+  .image-wrap img{
+    max-width:100%;
+    border-radius:14px;
+    border: 1px solid var(--border);
+  }
+
+  .summary{
+    margin-top:16px;
+    font-size:14px;
+    color: var(--muted);
+  }
+
+  .results{
+    margin-top:18px;
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap:14px;
+  }
+
+  .face-card{
+    padding:14px 16px;
+    border-radius:14px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+
+  .face-card strong{
+    font-size:14px;
+    font-weight:900;
+  }
+
+  .status{
+    font-size:13px;
+    font-weight:800;
+    letter-spacing:.3px;
+  }
+
+  .status.fake{ color: var(--red); }
+  .status.real{ color: var(--green); }
+
+  .confidence{
+    font-size:12px;
+    color: var(--muted);
+  }
+
+  .actions{
+    margin-top:22px;
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+
+  .btn{
+    height:46px;
+    padding:0 22px;
+    border-radius:14px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    font-size:14px;
+    font-weight:900;
+    letter-spacing:.4px;
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    color:#061126;
+    box-shadow: 0 14px 40px rgba(79,140,255,0.35);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+
+  .btn:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 18px 55px rgba(56,214,255,0.35);
+  }
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h2>AI Face Morph Detection</h2>
+    <div class="badge">FACE-LEVEL ANALYSIS</div>
+  </div>
+
+  <div class="card image-wrap">
+    {% if image %}
+      <img src="/static/{{ image }}" alt="Detection Result">
+    {% endif %}
+
+    {% if results %}
+      <div class="summary">
+        {{ results|length - 1 }} AI-morphed face(s) detected ·
+        1 authentic face identified
+      </div>
+    {% endif %}
+  </div>
+
+  {% if results %}
+  <div class="card">
+    <div class="results">
+      {% for r in results %}
+        <div class="face-card">
+          <strong>Face {{ r.face }}</strong>
+
+          {% if r.result == "REAL" %}
+            <div class="status real">AUTHENTIC</div>
+          {% else %}
+            <div class="status fake">AI-MORPHED</div>
+          {% endif %}
+
+          <div class="confidence">
+            Confidence: {{ r.confidence }}%
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="actions">
+    <a class="btn" href="/ai-face-morph">Analyze Another Image</a>
+    <a class="btn" href="/">Back to Dashboard</a>
+  </div>
+
+</div>
+
+</body>
+</html>

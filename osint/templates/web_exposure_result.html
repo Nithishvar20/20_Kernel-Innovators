@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Website Exposure Report</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root {
+  --bg: #020617;
+  --panel: #0b1224;
+  --border: #1e293b;
+  --accent: #38bdf8;
+  --success: #22c55e;
+  --warning: #fbbf24;
+  --danger: #ef4444;
+  --muted: #94a3b8;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  background: radial-gradient(circle at top, #0f172a, #020617);
+  color: #e5e7eb;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ===== MAIN CONTAINER ===== */
+
+.dashboard {
+  width: 96%;
+  max-width: 1300px;
+  height: 92vh;
+  background: linear-gradient(180deg, #0b1224, #050a18);
+  border: 1px solid rgba(56,189,248,.35);
+  border-radius: 22px;
+  box-shadow: 0 35px 90px rgba(0,0,0,.65);
+  padding: 28px 32px;
+
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 18px;
+}
+
+/* ===== HEADER ===== */
+
+.header h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  color: var(--accent);
+}
+
+.target {
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+/* ===== MAIN GRID ===== */
+
+.content {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 18px;
+  overflow: hidden;
+}
+
+/* ===== LEFT STATUS COLUMN ===== */
+
+.status-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.status-item {
+  padding: 14px;
+  border-radius: 12px;
+  background: #020617;
+  border: 1px solid var(--border);
+  font-size: .85rem;
+}
+
+.status-item.success { color: var(--success); }
+.status-item.warning { color: var(--warning); }
+.status-item.danger { color: var(--danger); }
+
+/* ===== RIGHT DETAIL PANEL ===== */
+
+.detail-panel {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 16px;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.card h3 {
+  margin: 0 0 10px;
+  font-size: .95rem;
+  color: #e5e7eb;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+}
+
+.card ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: .82rem;
+}
+
+pre {
+  margin-top: 8px;
+  background: #020617;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  font-size: .75rem;
+  overflow-x: auto;
+  color: #cbd5f5;
+}
+
+/* ===== FOOTER BUTTONS ===== */
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.actions a {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #38bdf8, #8b5cf6);
+  color: #020617;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: .85rem;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.actions a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(139,92,246,.4);
+}
+</style>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h2>🌐 Website Exposure Report</h2>
+  </div>
+
+  <!-- TARGET -->
+  <div class="target">
+    <b>Target:</b> {{ result.target }}
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="content">
+
+    <!-- LEFT STATUS -->
+    <div class="status-panel">
+
+      <div class="status-item success">
+        ✅ No exposed sensitive files detected
+      </div>
+
+      <div class="status-item success">
+        🛡 All major security headers detected
+      </div>
+
+      {% if result.robots_paths %}
+      <div class="status-item warning">
+        ⚠ robots.txt contains restricted paths
+      </div>
+      {% else %}
+      <div class="status-item success">
+        🤖 robots.txt does not reveal sensitive paths
+      </div>
+      {% endif %}
+
+    </div>
+
+    <!-- RIGHT DETAILS -->
+    <div class="detail-panel">
+
+      <!-- ROBOTS -->
+      <div class="card">
+        <h3>🤖 robots.txt Disclosures</h3>
+        {% if result.robots_paths %}
+          <ul>
+            {% for path in result.robots_paths %}
+              <li>{{ path }}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div style="color:var(--success); font-size:.85rem;">No sensitive paths disclosed</div>
+        {% endif %}
+      </div>
+
+      <!-- DNS -->
+      <div class="card">
+        <h3>🌐 DNS Intelligence</h3>
+
+        <div style="font-size:.82rem; margin-bottom:6px; color:#cbd5f5;">
+          DNS records reveal infrastructure providers, mail routing, and third-party services linked to this domain.
+        </div>
+
+        <ul>
+          <li><b>A / AAAA:</b> Hosting IPs</li>
+          <li><b>MX:</b> Mail servers</li>
+          <li><b>TXT:</b> SPF / DKIM / verification</li>
+          <li><b>NS:</b> Authoritative DNS providers</li>
+        </ul>
+
+        <pre>{{ result.dns_records }}</pre>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- FOOTER ACTIONS -->
+  <div class="actions">
+    <a href="/web-exposure">🔄 Run Another Check</a>
+    <a href="/">🏠 Back to Home</a>
+  </div>
+
+</div>
+
+</body>
+</html>

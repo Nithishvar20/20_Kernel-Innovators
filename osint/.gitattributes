@@ -1,0 +1,42 @@
+# =========================
+# Python cache / env
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+
+# =========================
+# Trained models (DO NOT PUSH)
+# =========================
+*.pt
+*.pth
+*.pkl
+*.joblib
+
+models/
+osint/models/
+osint/ai_image_ml/models/
+
+# =========================
+# Datasets with sensitive data (DO NOT PUSH)
+# =========================
+dataset/
+data/
+datasets/
+
+osint/data/
+osint/ai_image_ml/dataset/
+
+# =========================
+# Runtime / uploads
+# =========================
+uploads/
+
+# =========================
+# OS / editor
+# =========================
+.DS_Store
+.vscode/
+.idea/

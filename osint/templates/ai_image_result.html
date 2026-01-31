@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Image Detection Result</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --bg-main: linear-gradient(180deg, #0f172a, #020617);
+    --card-bg: #020617;
+    --border: #1e293b;
+    --muted: #9ca3af;
+    --text: #e5e7eb;
+
+    --green: #22c55e;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --blue: #38bdf8;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg-main);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 32px;
+}
+
+.container {
+    width: 100%;
+    max-width: 900px;
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 36px 40px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.55);
+}
+
+/* HEADER */
+.header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.meta {
+    margin-top: 10px;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+/* VERDICT */
+.verdict {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 26px;
+    align-items: center;
+}
+
+.badge {
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid;
+}
+
+.badge.real {
+    background: rgba(34,197,94,0.15);
+    color: var(--green);
+    border-color: rgba(34,197,94,0.35);
+}
+
+.badge.possible {
+    background: rgba(245,158,11,0.15);
+    color: var(--amber);
+    border-color: rgba(245,158,11,0.35);
+}
+
+.badge.ai {
+    background: rgba(239,68,68,0.15);
+    color: var(--red);
+    border-color: rgba(239,68,68,0.35);
+}
+
+.score-block {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.score {
+    font-size: 44px;
+    font-weight: 700;
+}
+
+.score-label {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.progress {
+    height: 6px;
+    background: #020617;
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    margin-top: 6px;
+}
+
+.progress span {
+    height: 100%;
+    display: block;
+    width: {{ result.confidence }}%;
+    background:
+        {% if result.confidence > 70 %}
+            linear-gradient(90deg, #f87171, #ef4444);
+        {% elif result.confidence >= 50 %}
+            linear-gradient(90deg, #fbbf24, #f59e0b);
+        {% else %}
+            linear-gradient(90deg, #4ade80, #22c55e);
+        {% endif %};
+}
+
+/* SECTIONS */
+.section {
+    margin-top: 34px;
+}
+
+.section h2 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #e2e8f0;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+}
+
+.section p {
+    font-size: 14px;
+    color: #cbd5e1;
+    line-height: 1.6;
+}
+
+/* FOOTER */
+.footer {
+    margin-top: 36px;
+}
+
+.footer a {
+    color: var(--blue);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+    .container { padding: 28px; }
+    .verdict { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+        <h1>AI Image Detection Result</h1>
+        <div class="meta">
+            <div><b>Filename:</b> {{ filename }}</div>
+            <div><b>Model:</b> {{ result.model }}</div>
+        </div>
+    </div>
+
+    <!-- VERDICT -->
+    <div class="verdict">
+
+        {% if result.verdict == "AI-GENERATED" %}
+            <span class="badge ai">Highly AI Generated</span>
+        {% elif result.confidence >= 50 %}
+            <span class="badge possible">Possibly AI Generated</span>
+        {% else %}
+            <span class="badge real">Likely Real Image</span>
+        {% endif %}
+
+        <div class="score-block">
+            <div class="score">{{ result.confidence }}%</div>
+            <div class="score-label">AI Generation Probability</div>
+
+            <div class="progress">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXPLANATION -->
+    <div class="section">
+        <h2>AI Model Explanation</h2>
+
+        {% if result.verdict == "AI-GENERATED" %}
+            <p>
+                The deep learning model detected visual and statistical patterns
+                commonly associated with AI-generated images, including texture
+                consistency, frequency artifacts, and synthetic feature blending.
+            </p>
+        {% else %}
+            <p>
+                The image shows natural noise, lighting variation, and structural
+                irregularities typical of real-world photography.
+            </p>
+        {% endif %}
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <a href="/ai-image-detector">Upload another image</a>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Exposure Intelligence</title>
+
+<style>
+  :root{
+    /* ===== Premium Dark Cyber SaaS Theme ===== */
+    --bg0:#070A12;
+    --bg1:#0B1630;
+    --bg2:#07142A;
+
+    --glass: rgba(255,255,255,0.06);
+    --glass2: rgba(255,255,255,0.09);
+    --border: rgba(255,255,255,0.10);
+
+    --text:#EAF0FF;
+    --muted: rgba(234,240,255,0.74);
+    --dim: rgba(234,240,255,0.55);
+
+    --blue:#4F8CFF;
+    --cyan:#38D6FF;
+    --violet:#A78BFA;
+
+    --warningBG: rgba(245,158,11,0.12);
+    --warningBD: rgba(245,158,11,0.22);
+    --warningTX: #FFD18C;
+
+    --shadow: 0 26px 80px rgba(0,0,0,0.55);
+    --shadow2: 0 18px 44px rgba(0,0,0,0.46);
+
+    --r-xl: 26px;
+    --r-lg: 18px;
+    --r-md: 14px;
+
+    --fs-hero: 54px;
+    --fs-body: 15px;
+  }
+
+  html, body{
+    margin:0;
+    height:100%;
+    overflow:hidden;
+    background: var(--bg0);
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+    color: var(--text);
+    display:grid;
+    place-items:center;
+
+    background:
+      radial-gradient(1100px 700px at 14% 18%, rgba(56,214,255,0.15), transparent 60%),
+      radial-gradient(900px 600px at 88% 16%, rgba(79,140,255,0.18), transparent 58%),
+      radial-gradient(1200px 850px at 55% 115%, rgba(167,139,250,0.12), transparent 66%),
+      linear-gradient(180deg, var(--bg0) 0%, var(--bg1) 55%, var(--bg2) 100%);
+  }
+
+  /* frame */
+  .frame{
+    width: min(1320px, 92vw);
+    height: min(760px, 92vh);
+    padding: 34px 34px;
+
+    display:grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 46px;
+    align-items:center;
+  }
+
+  /* ==========================================================
+     LEFT: HERO
+     ========================================================== */
+  .brand{
+    display:flex;
+    align-items:center;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .logo{
+    width: 46px;
+    height: 46px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    position:relative;
+    overflow:hidden;
+    box-shadow: 0 18px 55px rgba(79,140,255,.14);
+  }
+
+  .logo::before{
+    content:"";
+    position:absolute;
+    inset:-2px;
+    background:
+      radial-gradient(24px 24px at 35% 35%, rgba(56,214,255,0.98), transparent 60%),
+      radial-gradient(30px 30px at 70% 75%, rgba(79,140,255,0.98), transparent 62%),
+      linear-gradient(135deg, rgba(167,139,250,0.34), rgba(56,214,255,0.10));
+    opacity: 0.95;
+  }
+
+  .logo::after{
+    content:"EI";
+    position:absolute;
+    inset:0;
+    display:grid;
+    place-items:center;
+    font-weight: 950;
+    font-size: 13px;
+    letter-spacing: 0.4px;
+    color:#061126;
+    text-shadow: 0 8px 18px rgba(0,0,0,0.35);
+  }
+
+  .brand-text{
+    display:flex;
+    flex-direction:column;
+    gap: 2px;
+  }
+
+  .brand-text .name{
+    font-size: 16px;
+    font-weight: 950;
+    letter-spacing: .2px;
+    line-height: 1.25;
+  }
+
+  .brand-text .tag{
+    font-size: 12px;
+    font-weight: 750;
+    color: var(--dim);
+    letter-spacing: .15px;
+    line-height: 1.2;
+  }
+
+  .title{
+    margin:0;
+    font-size: var(--fs-hero);
+    font-weight: 980;
+    letter-spacing: -1.2px;
+    line-height: 1.06;
+    max-width: 760px;
+  }
+
+  .accent{
+    background: linear-gradient(135deg, var(--cyan), var(--blue), var(--violet));
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+
+  .sub{
+    margin: 14px 0 0;
+    max-width: 660px;
+    font-size: var(--fs-body);
+    line-height: 1.75;
+    color: var(--muted);
+  }
+
+  .highlights{
+    margin-top: 18px;
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    max-width: 660px;
+  }
+
+  .hl{
+    padding: 12px 12px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.045);
+    border: 1px solid rgba(255,255,255,0.09);
+  }
+
+  .hl strong{
+    display:block;
+    font-size: 12px;
+    font-weight: 950;
+    letter-spacing: .25px;
+    text-transform: uppercase;
+    color: rgba(234,240,255,0.84);
+  }
+
+  .hl span{
+    display:block;
+    margin-top: 6px;
+    font-size: 12.6px;
+    line-height: 1.45;
+    color: rgba(234,240,255,0.64);
+  }
+
+  .pills{
+    margin-top: 18px;
+    display:flex;
+    flex-wrap:wrap;
+    gap: 10px;
+  }
+
+  .pill{
+    height: 34px;
+    padding: 0 12px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .18px;
+
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    color: rgba(234,240,255,0.82);
+  }
+
+  .notice{
+    margin-top: 16px;
+    padding: 11px 14px;
+    border-radius: 14px;
+    background: var(--warningBG);
+    border: 1px solid var(--warningBD);
+    color: var(--warningTX);
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1.35;
+    max-width: 660px;
+  }
+
+  .cta{
+    margin-top: 18px;
+    display:flex;
+    gap: 14px;
+    align-items:center;
+  }
+  .cta{
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  gap: 14px 16px;
+  align-items: start;
+}
+
+.cta-stack{
+  display: contents;
+}
+
+  .btn{
+    height: 50px;
+    padding: 0 22px;
+    border-radius: 16px;
+    min-width: 230px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-decoration:none;
+    font-size: 14px;
+    font-weight: 950;
+    letter-spacing: .50px;
+    transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
+    white-space: nowrap;
+  }
+
+  .btn.primary{
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    color:#061126;
+    box-shadow: 0 20px 60px rgba(79,140,255,0.32);
+  }
+
+  .btn.primary:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 24px 70px rgba(56,214,255,0.24);
+  }
+
+  .btn.secondary{
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    color:#061126;
+    box-shadow: 0 20px 60px rgba(79,140,255,0.32);
+  }
+
+  .btn.secondary:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 24px 70px rgba(56,214,255,0.24);
+  }
+
+  .trust{
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--dim);
+    font-weight: 750;
+    letter-spacing: .12px;
+  }
+
+  /* ==========================================================
+     ✅ RIGHT: WORKFLOW — NOT A CARD ANYMORE (Professional Layout)
+     ========================================================== */
+  .workflow{
+    position: relative;
+    padding: 6px 4px;
+  }
+
+  /* Subtle background shape (not a card) */
+  .workflow::before{
+    content:"";
+    position:absolute;
+    inset:-28px -24px -28px -24px;
+    border-radius: 30px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background:
+      radial-gradient(620px 420px at 70% 22%, rgba(56,214,255,0.10), transparent 65%),
+      radial-gradient(560px 380px at 15% 80%, rgba(79,140,255,0.10), transparent 65%),
+      rgba(255,255,255,0.02);
+    filter: blur(0px);
+    opacity: 0.9;
+    pointer-events:none;
+  }
+
+  .wf-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap: 14px;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .wf-head strong{
+    font-size: 20px;
+    font-weight: 980;
+    letter-spacing: .2px;
+  }
+
+  .wf-head p{
+    margin: 7px 0 0;
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(234,240,255,0.70);
+    max-width: 440px;
+  }
+
+  .wf-badge{
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 999px;
+    display:inline-flex;
+    align-items:center;
+    gap: 10px;
+
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.10);
+
+    font-size: 11px;
+    font-weight: 950;
+    letter-spacing: .35px;
+    text-transform: uppercase;
+    color: rgba(234,240,255,0.82);
+    position: relative;
+    z-index: 2;
+  }
+
+  .wf-dot{
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--cyan), var(--blue));
+    box-shadow: 0 0 24px rgba(56,214,255,0.36);
+  }
+
+  /* timeline rail */
+  .timeline{
+    position: relative;
+    display:grid;
+    gap: 12px;
+    z-index: 2;
+    padding-left: 54px;
+  }
+
+  .timeline::before{
+    content:"";
+    position:absolute;
+    left: 22px;
+    top: 4px;
+    bottom: 4px;
+    width: 2px;
+    border-radius: 999px;
+    background: linear-gradient(
+      180deg,
+      rgba(56,214,255,0.45),
+      rgba(79,140,255,0.22),
+      rgba(167,139,250,0.10)
+    );
+    opacity: 0.9;
+  }
+
+  .step{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 14px 14px;
+    border-radius: 18px;
+
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(8px);
+
+    transition: transform .16s ease, border-color .16s ease, background .16s ease;
+  }
+
+  .step:hover{
+    transform: translateY(-2px);
+    border-color: rgba(56,214,255,0.18);
+    background: rgba(255,255,255,0.06);
+  }
+
+  .node{
+    position:absolute;
+    left: 6px;
+    width: 34px;
+    height: 34px;
+    border-radius: 14px;
+    display:grid;
+    place-items:center;
+
+    font-size: 12px;
+    font-weight: 980;
+    color:#061126;
+
+    background: linear-gradient(135deg, rgba(56,214,255,0.98), rgba(79,140,255,0.92));
+    box-shadow: 0 16px 45px rgba(56,214,255,0.16);
+  }
+
+  .step-wrap{
+    position:relative;
+  }
+
+  .step-title{
+    font-size: 13.6px;
+    font-weight: 980;
+    letter-spacing: .12px;
+    margin:0;
+  }
+
+  .step-desc{
+    margin:0;
+    font-size: 12.7px;
+    line-height: 1.55;
+    color: rgba(234,240,255,0.70);
+  }
+
+  /* platform strip */
+  .platforms{
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+
+    display:flex;
+    flex-wrap:wrap;
+    gap: 8px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .platform{
+    height: 30px;
+    padding: 0 11px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border-radius: 999px;
+
+    font-size: 11.5px;
+    font-weight: 900;
+    letter-spacing: .18px;
+
+    color: rgba(234,240,255,0.70);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.09);
+  }
+
+  .platform:hover{
+    border-color: rgba(56,214,255,0.25);
+    color: rgba(234,240,255,0.88);
+  }
+
+  @media (max-width: 980px){
+    html, body{ overflow:auto; }
+    .frame{ height:auto; grid-template-columns: 1fr; }
+    .highlights{ grid-template-columns: 1fr; }
+    .cta{ flex-direction:column; align-items:flex-start; }
+    .btn{ width: 100%; min-width: 0; }
+  }
+</style>
+</head>
+
+<body>
+<main class="frame">
+
+  <!-- LEFT HERO -->
+  <section>
+    
+
+    <h1 class="title">
+      <span class="accent">Exposure Intelligence</span><br/>
+      for modern digital risk analysis
+    </h1>
+
+    <p class="sub">
+      Identify public identity linkages, metadata leakage signals, and synthetic media indicators.
+      Generate structured evidence output with confidence scoring for reporting and risk review.
+    </p>
+
+    <div class="highlights">
+      <div class="hl">
+        <strong>Correlation</strong>
+        <span>Link identity handles, profiles, and reuse patterns across platforms.</span>
+      </div>
+      <div class="hl">
+        <strong>Verification</strong>
+        <span>Detect AI-generated artifacts and synthetic manipulation indicators.</span>
+      </div>
+      <div class="hl">
+        <strong>Reporting</strong>
+        <span>Produce export-ready evidence summaries aligned for PDF reports.</span>
+      </div>
+    </div>
+
+    <div class="pills">
+      <div class="pill">Identity Linkage</div>
+      <div class="pill">Metadata Leakage</div>
+      <div class="pill">AI Verification</div>
+      <div class="pill">Evidence Reports</div>
+    </div>
+
+    <div class="notice">
+      Detect exposure early. Produce clear evidence. Reduce risk with confidence.
+    </div>
+
+   <div class="cta">
+
+  <a class="btn primary" href="/scan">
+    Start Exposure Scan
+  </a>
+  <a class="btn secondary" href="/reverse-osint">
+  Reverse OSINT – Image Exposure
+</a>
+
+  <a class="btn secondary" href="/ai-image-detector">
+    AI Image Check
+  </a>
+
+  <a class="btn secondary" href="/username-osint">
+     Username Footprint Scan
+  </a>
+
+  <a class="btn secondary" href="/web-exposure">
+     Website Exposure Check
+  </a>
+
+  <a class="btn secondary" href="/ai-face-morph">
+  AI Face Morph Detection
+</a>
+
+</div>
+
+    <div class="trust">
+      Ethical OSINT only • No private data access • Evidence-first output
+    </div>
+
+    
+  </section>
+
+  <!-- ✅ RIGHT WORKFLOW (NO CARD) -->
+  <section class="workflow">
+    <div class="wf-head">
+      <div>
+        <strong>How it works</strong>
+        <p>Three structured stages that convert open-source signals into correlation and reporting output.</p>
+      </div>
+
+      
+    </div>
+
+    <div class="timeline">
+      <div class="step-wrap">
+        <div class="node">01</div>
+        <div class="step">
+          <p class="step-title">Collect signals</p>
+          <p class="step-desc">Gather OSINT indicators from identity handles, public profiles, and media surface signals.</p>
+        </div>
+      </div>
+
+      <div class="step-wrap">
+        <div class="node">02</div>
+        <div class="step">
+          <p class="step-title">Correlate & verify</p>
+          <p class="step-desc">Detect linkage patterns and validate suspicious media using confidence scoring.</p>
+        </div>
+      </div>
+
+      <div class="step-wrap">
+        <div class="node">03</div>
+        <div class="step">
+          <p class="step-title">Export evidence</p>
+          <p class="step-desc">Generate structured evidence reports for reporting, review, and risk documentation.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="platforms">
+      <div class="platform">Instagram</div>
+      <div class="platform">Threads</div>
+      <div class="platform">Facebook</div>
+      <div class="platform">GitHub</div>
+      <div class="platform">LinkedIn</div>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>
